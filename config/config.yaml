@@ -1,0 +1,25 @@
+app:
+  name: ${APP_NAME}
+  port: ${PORT}
+
+database:
+  mongodb:
+    uri: ${MONGODB_URI}
+    dbName: ${MONGODB_NAME}
+    user: ${MONGODB_USER}
+    pass: ${MONGODB_PASS}
+    authSource: ${MONGODB_AUTHSOURCE}
+    retryAttempts: 3
+    retryDelay: 1000
+    autoIndex: false
+jwt:
+  access:
+    secret: ${ACCESS_TOKEN_SECRET}
+    expiry: ${ACCESS_TOKEN_EXPIRY}
+  refresh:
+    secret: ${REFRESH_TOKEN_SECRET}
+    expiry: ${REFRESH_TOKEN_EXPIRY}
+
+queue:
+  email:
+    concurrency: ${EMAIL_QUEUE_CONCURRENCY}
