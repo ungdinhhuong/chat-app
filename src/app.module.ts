@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -13,7 +12,6 @@ import { MongodbConfig } from 'src/config/mongodb.config';
 @Module({
   imports: [
     AuthModule,
-    UserModule,
     RedisModule,
     SharedModule,
     ConfigModule.forRoot({

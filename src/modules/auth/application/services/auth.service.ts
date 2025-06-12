@@ -1,14 +1,14 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { REPOSITORY } from 'src/modules/auth/type';
 import { AuthRepository } from 'src/modules/auth/domain/repositories/auth.repository';
-import { RegisterDto } from 'src/modules/auth/dto/register.dto';
+import { RegisterDto } from 'src/modules/auth/application/dto/register.dto';
 import { AuthUser } from 'src/modules/auth/domain/entities/auth-user';
 import * as bcrypt from 'bcryptjs';
 import { AppException } from 'src/common/exceptions/app.exception';
-import { LoginDto } from 'src/modules/auth/dto/login.dto';
+import { LoginDto } from 'src/modules/auth/application/dto/login.dto';
 import { Token } from 'src/modules/auth/domain/entities/token';
 import { TokenService } from 'src/modules/auth/application/services/token.service';
-import { RefreshDto } from 'src/modules/auth/dto/refresh.dto';
+import { RefreshDto } from 'src/modules/auth/application/dto/refresh.dto';
 
 @Injectable()
 export class AuthService {

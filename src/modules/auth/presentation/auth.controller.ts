@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { RegisterDto } from 'src/modules/auth/dto/register.dto';
+import { RegisterDto } from 'src/modules/auth/application/dto/register.dto';
 import { AuthService } from 'src/modules/auth/application/services/auth.service';
 import { Responder } from 'src/common/responder';
-import { LoginDto } from 'src/modules/auth/dto/login.dto';
+import { LoginDto } from 'src/modules/auth/application/dto/login.dto';
 import { TimeUtil } from 'src/common/utils/time.util';
 import { JwtAuthGuard } from 'src/modules/auth/infrastructure/guards/jwt-auth.guard';
 import { ApiPublic } from 'src/common/decorators/api-public.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { AuthUser } from 'src/modules/auth/domain/entities/auth-user';
-import { RefreshDto } from 'src/modules/auth/dto/refresh.dto';
+import { RefreshDto } from 'src/modules/auth/application/dto/refresh.dto';
 import { AppException } from 'src/common/exceptions/app.exception';
 
 @Controller('api/auth')
