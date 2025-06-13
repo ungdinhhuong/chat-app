@@ -1,29 +1,22 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Input,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
-import { useState } from 'react';
+import {Button, Heading, Input, Stack, Text, Link, Badge} from '@chakra-ui/react';
+import {useState} from 'react';
 import {FormControl, FormLabel} from "@chakra-ui/form-control";
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 import AuthLayout from "@/components/layout/AuthLayout.jsx";
-import {useNavigate} from "react-router-dom";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {login} from "@/features/auth/authService.js";
 import {loginSuccess} from "@/features/auth/authSlice.js";
+import {ROUTES} from "@/routes.js";
 
-const LoginPage =  () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('admin@gmail.com');
   const [password, setPassword] = useState('admin@gmail.com');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin =async () => {
+  const handleSubmit = async () => {
     // Validate email and password
 
     // Submit login
@@ -34,8 +27,8 @@ const LoginPage =  () => {
       return;
     }
     dispatch(loginSuccess(response.data));
-    toast.success('Login thành công');
-    navigate('/');
+    toast.success('Đăng nhập thành công');
+    navigate(ROUTES.HOME);
   };
 
   return (
@@ -60,9 +53,10 @@ const LoginPage =  () => {
           />
         </FormControl>
         <Text textStyle="sm" color="red.500" textAlign="center">{error}</Text>
-        <Button colorScheme="teal" onClick={handleLogin}>
+        <Button colorPalette="teal" onClick={handleSubmit}>
           Đăng nhập
         </Button>
+        <Text textStyle="sm" textAlign="center">Chưa có tài khoản? <Link as={RouterLink} to={ROUTES.REGISTER} color="teal.500">Đăng ký</Link></Text>
       </Stack>
     </AuthLayout>
   );

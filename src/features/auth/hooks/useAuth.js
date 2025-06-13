@@ -1,5 +1,5 @@
-import { useDispatch } from 'react-redux'
-import { loginSuccess, logout } from '../authSlice'
+import {useDispatch} from 'react-redux'
+import {loginSuccess, logout} from '../authSlice'
 import * as authService from '../authService'
 
 export const useAuth = () => {
