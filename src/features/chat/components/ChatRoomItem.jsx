@@ -6,7 +6,7 @@ export function ChatRoomItem({ title, message, time, unreadCount, isActive, onCl
       p={3}
       borderRadius="lg"
       bg={isActive ? 'blue.50' : 'white'}
-      boxShadow="sm"
+      border="1px solid" borderColor={'gray.200'}
       _hover={{ bg: isActive ? 'blue.100' : 'gray.50' }}
       cursor="pointer"
       onClick={onClick}

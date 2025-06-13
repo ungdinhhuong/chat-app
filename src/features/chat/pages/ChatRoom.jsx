@@ -13,9 +13,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import {FaCogs, FaLaptop, FaPlus, FaUserNurse, FaUserTie} from 'react-icons/fa';
+import {FaLaptop, FaPlus, FaUserNurse, FaUserTie} from 'react-icons/fa';
 import {ChatMessageBubble} from "@/features/chat/components/ChatMessageBubble.jsx";
 import {ChatRoomItem} from "@/features/chat/components/ChatRoomItem.jsx";
+import {ColorModeButton} from "@/components/ui/color-mode.jsx";
 
 const ChatRoom = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -51,75 +52,75 @@ const ChatRoom = () => {
 
   return (
     <Flex h="100vh">
-      <Box w="300px" borderRight="1px solid #e2e8f0">
-        <Flex direction="column" justify="space-between" h="100%">
-          <Box bg={"#fff"}>
-            <Flex align="center" p={4} mb={4} borderBottom="1px solid #e2e8f0">
-              <Avatar.Root>
-                <Avatar.Fallback name="admin"/>
-                <Avatar.Image src="https://bit.ly/sage-adebayo"/>
-              </Avatar.Root>
-              <Text fontWeight="bold">admin</Text>
-              <Spacer/>
-              <IconButton size="sm" aria-label="Settings">
-                <FaCogs/>
-              </IconButton>
-            </Flex>
+      <Flex direction="column" justify="space-between" h="100%" w="300px" borderRightWidth="1px" borderColor="gray.200">
+        <Box>
+          <Flex align="center" p={4} borderBottomWidth="1px" borderColor="gray.200">
+            <Avatar.Root>
+              <Avatar.Fallback name="admin"/>
+              <Avatar.Image src="https://bit.ly/sage-adebayo"/>
+            </Avatar.Root>
+            <Text fontWeight="bold" px={4}>admin</Text>
+            <Spacer/>
+            <ColorModeButton/>
+            {/*<IconButton size="sm" variant={'outline'} aria-label="Settings">*/}
+            {/*  <FaCogs/>*/}
+            {/*</IconButton>*/}
+          </Flex>
 
-            <Flex align="center" justify="space-between" p={4} mb={2}>
-              <Text fontSize="sm" fontWeight="semibold">Phòng Chat</Text>
-              <IconButton size="xs" aria-label="Thêm phòng" variant="outline">
-                <FaPlus/>
-              </IconButton>
-            </Flex>
+          <Flex align="center" justify="space-between" p={4}>
+            <Text fontSize="sm" fontWeight="semibold">Phòng Chat</Text>
+            <IconButton size="xs" aria-label="Thêm phòng" variant="outline">
+              <FaPlus/>
+            </IconButton>
+          </Flex>
 
-            <VStack spacing={2} align="stretch" p={4}>
-              {rooms.map((room) => (
-                <ChatRoomItem
-                  key={room.id}
-                  title="Nhóm Công Việc"
-                  message="Chào mọi người!"
-                  time="4 giờ trước"
-                  unreadCount={2}
-                  isActive={false}
-                  onClick={() => setSelectedRoom(room.id)}
-                />
-              ))}
-            </VStack>
-          </Box>
-          <Box borderTop={"1px solid #e2e8f0"} p={4} mt={4}>
-            <Text fontWeight="bold" mb={2}>
-              Đang online ({users.length})
-            </Text>
-            {users.map((user) => {
-              const Icon = user.icon;
-              return (
-                <HStack key={user.name} spacing={2} mb={2} position="relative">
-                  <Box position="relative">
-                    <Icon fontSize="20px"/>
-                    <Box
-                      position="absolute"
-                      bottom={"-0.25rem"}
-                      right={"-0.25rem"}
-                      w="0.75rem"
-                      h="0.75rem"
-                      bg="green.400"
-                      borderRadius="full"
-                      border="2px solid white"
-                    />
-                  </Box>
-                  <Text>{user.name}</Text>
-                </HStack>
-              );
-            })}
-          </Box>
-        </Flex>
-      </Box>
+          <VStack spacing={2} align="stretch" p={4}>
+            {rooms.map((room) => (
+              <ChatRoomItem
+                key={room.id}
+                title="Nhóm Công Việc"
+                message="Chào mọi người!"
+                time="4 giờ trước"
+                unreadCount={2}
+                isActive={false}
+                onClick={() => setSelectedRoom(room.id)}
+              />
+            ))}
+          </VStack>
+        </Box>
+        <Box borderTopWidth="1px" fontSize={'sm'} borderColor={"gray.200"} p={4} mt={4}>
+          <Text mb={2}>
+            Đang online ({users.length})
+          </Text>
+          {users.map((user) => {
+            const Icon = user.icon;
+            return (
+              <HStack key={user.name} spacing={2} mb={2} position="relative">
+                <Box position="relative">
+                  <Icon fontSize="20px"/>
+                  <Box
+                    position="absolute"
+                    bottom={"-0.25rem"}
+                    right={"-0.25rem"}
+                    w="0.75rem"
+                    h="0.75rem"
+                    bg="green.400"
+                    borderRadius="full"
+                    border="2px solid white"
+                  />
+                </Box>
+                <Text>{user.name}</Text>
+              </HStack>
+            );
+          })}
+        </Box>
+      </Flex>
 
       <Flex flex={1} direction="column">
         {selectedRoom ? (
           <>
-            <Flex justify="space-between" align="center" p={4} bg="gray.50" borderBottom="1px solid #e2e8f0"
+            <Flex justify="space-between" align="center" p={4} bg="gray.50" borderBottomWidth="1px"
+                  borderColor={"gray.200"}
                   minH={"4.55rem"}>
               <Flex gap={2}>
                 <Text fontWeight="bold">Nhóm Công Việc</Text>
@@ -148,7 +149,8 @@ const ChatRoom = () => {
               ))}
             </VStack>
 
-            <Stack spacing={4} p={4} borderTop="1px solid #e2e8f0" direction={{base: 'column', md: 'row'}} w={'full'}>
+            <Stack spacing={4} p={4} borderTopWidth="1px" borderColor={"gray.200"}
+                   direction={{base: 'column', md: 'row'}} w={'full'}>
               <Input
                 type={'text'}
                 placeholder={'Nhập nội dung tin nhắn...'}
@@ -162,12 +164,12 @@ const ChatRoom = () => {
                 bg="white"
               />
               <Button
-                bg={'teal.500'}
+                bg={'blue.500'}
                 rounded="md"
                 color={'white'}
                 flex={'1 0 100px'}
-                _hover={{bg: 'teal.600'}}
-                _focus={{bg: 'teal.600'}}>
+                _hover={{bg: 'blue.600'}}
+                _focus={{bg: 'blue.600'}}>
                 Gửi
               </Button>
             </Stack>
