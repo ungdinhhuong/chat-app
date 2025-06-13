@@ -6,7 +6,6 @@ import {Provider} from 'react-redux'
 import {persistor, store} from './store'
 import {PersistGate} from 'redux-persist/integration/react'
 import {ChakraProvider, defaultSystem} from "@chakra-ui/react"
-import {system} from "@/system.js";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -5,7 +5,7 @@ import AuthLayout from "@/components/layout/AuthLayout.jsx";
 import {useState} from "react";
 import {register} from "@/features/auth/authService.js";
 import {toast} from "react-toastify";
-import {ROUTES} from "@/routes.js";
+import {ROUTE} from "@/consts/ROUTE.js";
 
 const RegisterPage = () => {
   const [user, setUser] = useState({
@@ -23,7 +23,7 @@ const RegisterPage = () => {
       return;
     }
     toast.success('Đăng ký thành công');
-    navigate(ROUTES.LOGIN);
+    navigate(ROUTE.AUTH.LOGIN);
   };
 
   const handleChange = (e) => {
@@ -67,7 +67,7 @@ const RegisterPage = () => {
         <Button colorPalette="teal" onClick={handleSubmit}>
           Đăng ký
         </Button>
-        <Text textStyle="sm" textAlign="center">Bạn đã có tài khoản? <Link as={RouterLink} to={ROUTES.LOGIN} color="teal.500">Đăng
+        <Text textStyle="sm" textAlign="center">Bạn đã có tài khoản? <Link as={RouterLink} to={ROUTE.AUTH.LOGIN} color="teal.500">Đăng
           nhập</Link></Text>
       </Stack>
     </AuthLayout>
