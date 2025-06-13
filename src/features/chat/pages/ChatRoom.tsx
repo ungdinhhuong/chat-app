@@ -16,7 +16,7 @@ import {
 import {FaLaptop, FaPlus, FaUserNurse, FaUserTie} from 'react-icons/fa';
 import {ChatMessageBubble} from "@/features/chat/components/ChatMessageBubble.jsx";
 import {ChatRoomItem} from "@/features/chat/components/ChatRoomItem.jsx";
-import {ColorModeButton} from "@/components/ui/color-mode.jsx";
+import {ColorModeButton} from "@/components/ui/color-mode";
 
 const ChatRoom = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);

@@ -1,8 +1,13 @@
 import {Box, Flex} from '@chakra-ui/react';
-import Navbar from "@/components/Navbar.jsx";
-import Footer from "@/components/Footer.jsx";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import {ReactNode} from "react";
 
-export default function AuthLayout({children}) {
+interface AuthLayoutProps {
+  children: ReactNode;
+}
+
+export default function AuthLayout({children}: AuthLayoutProps) {
   return (
     <Flex direction="column" minH="100vh" bg="gray.100">
       <Box minW="100vw">

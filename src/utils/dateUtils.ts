@@ -1,6 +1,6 @@
-const formatTime = (date) => {
+const formatTime = (date: Date) => {
   const now = new Date();
-  const diff = now - date;
+  const diff = now.getTime() - date.getTime();
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);

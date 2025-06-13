@@ -1,6 +1,5 @@
 import { receiveMessage } from '@/features/chat/chatSlice'
 import { addOnlineUser, removeOnlineUser, setOnlineUsers } from '@/features/online/onlineSlice'
-import { setRooms } from '@/features/rooms/roomsSlice'
 import socket from '@/services/socket'
 
 export const socketMiddleware = store => next => action => {
@@ -27,7 +26,7 @@ export const initSocketListeners = (store) => {
     store.dispatch(removeOnlineUser(userId))
   })
 
-  socket.on('rooms:list', (rooms) => {
-    store.dispatch(setRooms(rooms))
-  })
+  // socket.on('rooms:list', (rooms) => {
+  //   store.dispatch(setRooms(rooms))
+  // })
 }

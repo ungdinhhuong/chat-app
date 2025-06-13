@@ -16,13 +16,11 @@ export default function Footer() {
           </IconButton>
 
           <IconButton
-            icon={<FaYoutube/>}
+            icon={<FaYoutube fontSize="20px"/>}
             aria-label="YouTube"
             variant="outline"
             rounded="full"
-          >
-            <FaYoutube/>
-          </IconButton>
+          />
           <IconButton
             icon={<FaInstagram/>}
             aria-label="Instagram"

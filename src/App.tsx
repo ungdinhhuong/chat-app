@@ -1,11 +1,10 @@
 import './App.scss'
 import {BrowserRouter} from 'react-router-dom'
-import AppRoutes from './routes'
-import {toast, ToastContainer} from 'react-toastify';
+import AppRoutes from '@/routes'
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  toast("Wow so easy!");
   return (
     <BrowserRouter>
       <AppRoutes/>

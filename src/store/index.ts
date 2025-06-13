@@ -12,7 +12,6 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // sử dụng localStorage
 import chatReducer from '@/features/chat/chatSlice'
-import roomsReducer from '@/features/rooms/roomsSlice'
 import onlineReducer from '@/features/online/onlineSlice'
 import { socketMiddleware } from '@/middleware/socketMiddleware'
 import authReducer from '@/features/auth/authSlice'
@@ -20,7 +19,6 @@ import authReducer from '@/features/auth/authSlice'
 const rootReducer = combineReducers({
   auth: authReducer,
   chat: chatReducer,
-  rooms: roomsReducer,
   online: onlineReducer
 })
 

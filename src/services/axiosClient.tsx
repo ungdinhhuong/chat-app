@@ -1,5 +1,12 @@
 import axios from 'axios'
-import {config} from "@/config.js";
+import {config} from "@/config";
+
+export interface ApiResponse<T = unknown> {
+  success: boolean
+  message: string
+  data: T
+  statusCode: number
+}
 
 const instance = axios.create({
   baseURL: config.apiUrl,
