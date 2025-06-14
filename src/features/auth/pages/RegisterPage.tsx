@@ -14,8 +14,8 @@ import {useForm} from "react-hook-form";
 export const registerSchema = z.object({
   user: z.object({
     username: z.string(),
-    email: z.string().email(),
-    password: z.string().min(6),
+    email: z.string().nonempty().email(),
+    password: z.string().nonempty().min(6),
   })
 })
 
@@ -57,20 +57,21 @@ const RegisterPage = () => {
           <Heading textAlign="center">Đăng ký</Heading>
           <FormControl isInvalid={!!errors.user?.username}>
             <FormLabel>Username</FormLabel>
-            <Input {...register('user.username')} placeholder="Nhập username"/>
+            <Input {...register('user.username')} onFocus={() => setError('')} placeholder="Nhập username"/>
             <Text color="red.500" fontSize="sm">{errors.user?.username?.message}</Text>
           </FormControl>
           <FormControl isInvalid={!!errors.user?.email}>
             <FormLabel>Email</FormLabel>
-            <Input {...register('user.email')} placeholder="Nhập email"/>
+            <Input {...register('user.email')} onFocus={() => setError('')} placeholder="Nhập email"/>
             <Text color="red.500" fontSize="sm">{errors.user?.email?.message}</Text>
           </FormControl>
           <FormControl isInvalid={!!errors.user?.password}>
             <FormLabel>Mật khẩu</FormLabel>
-            <Input type="password" {...register('user.password')} placeholder="Nhập mật khẩu"/>
+            <Input type="password" {...register('user.password')} onFocus={() => setError('')}
+                   placeholder="Nhập mật khẩu"/>
             <Text color="red.500" fontSize="sm">{errors.user?.password?.message}</Text>
           </FormControl>
-          <Text textStyle="sm" color="red.500" textAlign="center">{error}</Text>
+          {error && <Text textStyle="sm" color="red.500" textAlign="center">{error}</Text>}
           <Button colorPalette="teal" type="submit" loading={isSubmitting}>
             Đăng ký
           </Button>
@@ -79,7 +80,7 @@ const RegisterPage = () => {
         </Stack>
       </form>
     </AuthLayout>
-)
+  )
 }
 
 export default RegisterPage

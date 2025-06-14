@@ -56,15 +56,15 @@ const LoginPage = () => {
           <Heading textAlign="center">Đăng nhập</Heading>
           <FormControl isInvalid={!!errors.email}>
             <FormLabel>Email</FormLabel>
-            <Input {...register('email')} placeholder="Nhập email"/>
+            <Input {...register('email')} onFocus={() => setError('')} placeholder="Nhập email"/>
             <Text color="red.500" fontSize="sm">{errors.email?.message}</Text>
           </FormControl>
           <FormControl isInvalid={!!errors.password}>
             <FormLabel>Mật khẩu</FormLabel>
-            <Input type="password" {...register('password')} placeholder="Nhập mật khẩu"/>
+            <Input type="password" {...register('password')} onFocus={() => setError('')} placeholder="Nhập mật khẩu"/>
             <Text color="red.500" fontSize="sm">{errors.password?.message}</Text>
           </FormControl>
-          <Text textStyle="sm" color="red.500" textAlign="center">{error}</Text>
+          {error && <Text textStyle="sm" color="red.500" textAlign="center">{error}</Text>}
           <Button colorScheme="teal" type="submit" loading={isSubmitting}>
             Đăng nhập
           </Button>
