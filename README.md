@@ -96,3 +96,14 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+```text
+Interface Layer (NestJS Controller)
+    ↓ calls
+Application Layer (Use Cases)
+    ↓ depends on
+Domain Layer (Entities, Repo Interface)
+    ↑ implemented by
+Infrastructure Layer (DB, API, File, etc)
+```

@@ -6,7 +6,7 @@ services:
       - ./:/usr/src/app
       - ./node_modules:/usr/src/app/node_modules # tránh ghi đè thư mục node_modules trong container
     ports:
-      - "3001:3000"
+      - "5000:3000"
     environment:
       - NODE_ENV=development
       - PORT=3000

@@ -20,6 +20,12 @@ jwt:
     secret: ${REFRESH_TOKEN_SECRET}
     expiry: ${REFRESH_TOKEN_EXPIRY}
 
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+  password: ${REDIS_PASSWORD}
+  db: ${REDIS_DB}
+
 queue:
   email:
     concurrency: ${EMAIL_QUEUE_CONCURRENCY}

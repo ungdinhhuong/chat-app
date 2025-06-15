@@ -1,19 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './modules/auth/auth.module';
-import { RedisModule } from './modules/redis/redis.module';
-import { SharedModule } from './modules/shared/shared.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration from 'src/config/configuration';
-import { MongodbConfig } from 'src/config/mongodb.config';
+import configuration from 'src/infrastructure/config/configuration';
+import { MongodbConfig } from 'src/infrastructure/config/mongodb.config';
+import { AuthModule } from 'src/interface/rest/auth/auth.module';
+import { RedisModule } from 'src/infrastructure/redis/redis.module';
 
 @Module({
   imports: [
     AuthModule,
-    RedisModule,
-    SharedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
@@ -24,6 +21,7 @@ import { MongodbConfig } from 'src/config/mongodb.config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => new MongodbConfig(configService).dbDefault,
     }),
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
