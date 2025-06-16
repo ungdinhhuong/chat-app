@@ -17,8 +17,8 @@ export class RoomRepositoryImpl implements RoomRepository {
   async create(roomData: Room): Promise<string> {
     const room = new this.roomModel({
       name: roomData.name,
-      creator: new Types.ObjectId(roomData.creator.id),
       members: roomData.members.map(member => new Types.ObjectId(member.id)),
+      creator: new Types.ObjectId(roomData.creator.id),
       type: roomData.type,
     });
 
@@ -28,10 +28,31 @@ export class RoomRepositoryImpl implements RoomRepository {
 
   async findById(roomId: string): Promise<Room | null> {
     const data = await this.roomModel.findById(roomId)
-      .populate('members', 'username')
-      .populate('creator', 'username')
+      .populate('members', 'username email')
+      .populate('creator', 'username email')
+      // .populate([
+      //   {
+      //     path: 'creator',
+      //     select: ['username', 'email'],
+      //   },
+      //   {
+      //     path: 'members',
+      //     select: ['username', 'email'],
+      //   },
+      // ])
+      // .populate([{ path: 'creator', select: ['username', 'email'] }]) // Tương tự trên
+      // .populate({  // Nếu creator có ref đến một collection khác nữa
+      //   path: 'creator',
+      //   select: 'username email',
+      //   populate: {
+      //     path: 'organization',
+      //     select: 'name type',
+      //   }
+      // })
+      .lean()
       .exec();
     if (!data) return null;
+
 
     const room = new Room();
     room.id = data._id.toString();
@@ -97,6 +118,8 @@ export class RoomRepositoryImpl implements RoomRepository {
       room.id = roomData._id.toString();
       room.name = roomData.name;
       room.type = roomData.type;
+      room.createdAt = roomData.createdAt;
+      room.updatedAt = roomData.updatedAt;
 
       const membersData = roomData.members as any[];
       room.members = membersData.map(member => UserFactory.fromObject({

@@ -10,15 +10,11 @@ import { REPOSITORY } from 'src/shared/constants/type';
 import { AuthRepositoryImpl } from 'src/infrastructure/database/repositories/auth.repository.impl';
 import { AuthController } from 'src/interface/rest/auth/controllers/auth.controller';
 import { JwtStrategy } from 'src/interface/rest/auth/strategies/jwt.strategy';
+import { UserModule } from 'src/interface/rest/user/user.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      {
-        name: UserModel.name,
-        schema: UserSchema,
-      },
-    ]),
+    UserModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

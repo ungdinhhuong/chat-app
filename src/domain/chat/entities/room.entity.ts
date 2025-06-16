@@ -7,4 +7,6 @@ export class Room {
   members: User[];
   creator: User;
   type: ChatRoomType;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

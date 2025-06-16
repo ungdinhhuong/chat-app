@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-@Schema({ timestamps: true })
+@Schema({ collection: 'messages', timestamps: true })
 export class MessageModel extends Document {
   @Prop({ required: true })
   content: string;

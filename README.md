@@ -107,3 +107,14 @@ Domain Layer (Entities, Repo Interface)
     ↑ implemented by
 Infrastructure Layer (DB, API, File, etc)
 ```
+```javascript
+mongoose.set('debug', function (collectionName, method, query, doc) {
+  console.log(`[MongoDB] ${collectionName}.${method}`, JSON.stringify(query), doc);
+});
+await this.roomModel.find({ ... }).explain('executionStats');
+console.log(await this.roomModel.find({ ... }).getQuery());
+RoomSchema.pre(/^find/, function (next) {
+  console.log('[Room] Query:', this.getQuery());
+  next();
+});
+```

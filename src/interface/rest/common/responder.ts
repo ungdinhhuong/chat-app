@@ -6,7 +6,6 @@ export class Responder {
       success: true,
       message,
       data: null,
-      statusCode: HttpStatus.OK,
     };
   }
 
@@ -15,7 +14,6 @@ export class Responder {
       success: true,
       message,
       data,
-      statusCode: HttpStatus.OK,
     };
   }
 
@@ -24,7 +22,6 @@ export class Responder {
       success: false,
       message,
       data,
-      statusCode: httpCode,
     };
   }
 
@@ -49,7 +46,6 @@ export class Responder {
 
     return {
       ...body,
-      statusCode: status,
     };
   }
 

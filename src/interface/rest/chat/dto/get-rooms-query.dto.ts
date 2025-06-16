@@ -1,11 +1,11 @@
-import { IsEnum, IsOptional, IsString, IsInt, Min, IsArray } from 'class-validator';
-import { Expose, Transform, Type } from 'class-transformer';
+import { IsEnum, IsOptional, IsString, IsInt, Min, IsArray, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ChatRoomType } from 'src/domain/chat/value_objects/chat-room-type';
 
 export class GetRoomsQueryDto {
-  @Expose({ name: 'user_id' })
   @IsString()
-  userId: string;
+  @IsNotEmpty()
+  user_id: string;
 
   @IsOptional()
   @IsArray()
