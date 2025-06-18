@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { REPOSITORY } from 'src/shared/constants/type';
 import { RoomRepository } from 'src/domain/chat/repositories/room.repository';
-import { Room } from 'src/domain/chat/entities/room.entity';
+import { Room } from 'src/domain/chat/entities/room';
 import { GetRoomsQueryDto } from 'src/interface/rest/chat/dto/get-rooms-query.dto';
 import { LIMIT_PAGE } from 'src/shared/constants/const';
-import { User } from 'src/domain/user/entities/User';
+import { User } from 'src/domain/user/entities/user';
 
 @Injectable()
 export class RoomService {

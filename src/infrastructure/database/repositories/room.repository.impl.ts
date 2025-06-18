@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { RoomModel } from 'src/infrastructure/database/schemas/room.model';
 import { Model, Types } from 'mongoose';
-import { Room } from 'src/domain/chat/entities/room.entity';
+import { Room } from 'src/domain/chat/entities/room';
 import { UserFactory } from 'src/infrastructure/factories/user.factory';
 import { FindRoomsParams } from 'src/domain/chat/interfaces/room.interface';
 
@@ -22,8 +22,8 @@ export class RoomRepositoryImpl implements RoomRepository {
       type: roomData.type,
     });
 
-    const savedRoom = await room.save();
-    return savedRoom.id;
+    const saved = await room.save();
+    return saved.id;
   }
 
   async findById(roomId: string): Promise<Room | null> {

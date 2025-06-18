@@ -1,4 +1,4 @@
-import { User } from 'src/domain/user/entities/User';
+import { User } from 'src/domain/user/entities/user';
 
 export class UserFactory {
   static fromObject(obj: {

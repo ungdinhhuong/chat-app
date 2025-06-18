@@ -1,4 +1,4 @@
-import { Room } from 'src/domain/chat/entities/room.entity';
+import { Room } from 'src/domain/chat/entities/room';
 import { FindRoomsParams } from 'src/domain/chat/interfaces/room.interface';
 
 

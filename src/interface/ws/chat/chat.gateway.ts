@@ -83,11 +83,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const userId = this.connectedUsers.get(client.id);
     if (!userId) return;
 
-    const message = await this.chatService.createMessage({
-      content: data.content,
-      sender: userId,
-      room: data.roomId,
-    });
+    // const message = await this.chatService.createMessage({
+    //   content: data.content,
+    //   sender: userId,
+    //   room: data.roomId,
+    // });
 
     // Publish to Redis for scalability
     await this.redisService.publish(

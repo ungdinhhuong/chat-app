@@ -1,4 +1,4 @@
-import { Room } from 'src/domain/chat/entities/room.entity';
+import { Room } from 'src/domain/chat/entities/room';
 
 export class GetRoomDetailResponse {
   static format(room: Room | null) {

@@ -9,6 +9,8 @@ import { RoomModel, RoomSchema } from 'src/infrastructure/database/schemas/room.
 import { MessageModel, MessageSchema } from 'src/infrastructure/database/schemas/message.model';
 import { UserModule } from 'src/interface/rest/user/user.module';
 import { RoomService } from 'src/application/chat/services/room.service';
+import { MessageService } from 'src/application/chat/services/message.service';
+import { MessageController } from 'src/interface/rest/message/controllers/message.controller';
 
 
 @Module({
@@ -19,9 +21,10 @@ import { RoomService } from 'src/application/chat/services/room.service';
       { name: MessageModel.name, schema: MessageSchema },
     ]),
   ],
-  controllers: [RoomController],
+  controllers: [RoomController, MessageController],
   providers: [
     RoomService,
+    MessageService,
     {
       provide: REPOSITORY.RoomRepository,
       useClass: RoomRepositoryImpl,

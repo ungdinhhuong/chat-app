@@ -1,4 +1,4 @@
-import { Room } from 'src/domain/chat/entities/room.entity';
+import { Room } from 'src/domain/chat/entities/room';
 import { TimeUtil } from 'src/infrastructure/utils/time.util';
 
 export class GetRoomsResponse {
