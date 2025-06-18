@@ -17,6 +17,10 @@ import {FaLaptop, FaPlus, FaUserNurse, FaUserTie} from 'react-icons/fa';
 import {ChatMessageBubble} from "@/features/chat/components/ChatMessageBubble.jsx";
 import {ChatRoomItem} from "@/features/chat/components/ChatRoomItem.jsx";
 import {ColorModeButton} from "@/components/ui/color-mode";
+import {CiLogout} from "react-icons/ci";
+import {useDispatch} from "react-redux";
+import {logout} from "@/features/auth/authSlice";
+import {toast} from "react-toastify";
 
 const ChatRoom = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -50,6 +54,13 @@ const ChatRoom = () => {
     {name: "bob", icon: FaUserNurse},
   ];
 
+  const dispatch = useDispatch();
+
+  const executeLogout = () => {
+    dispatch(logout());
+    toast.success("Đăng xuất thành công")
+  }
+
   return (
     <Flex h="100vh">
       <Flex direction="column" justify="space-between" h="100%" w="300px" borderRightWidth="1px" borderColor="gray.200">
@@ -62,9 +73,9 @@ const ChatRoom = () => {
             <Text fontWeight="bold" px={4}>admin</Text>
             <Spacer/>
             <ColorModeButton/>
-            {/*<IconButton size="sm" variant={'outline'} aria-label="Settings">*/}
-            {/*  <FaCogs/>*/}
-            {/*</IconButton>*/}
+            <IconButton onClick={executeLogout} size="sm" variant={'outline'} aria-label="Settings">
+              <CiLogout/>
+            </IconButton>
           </Flex>
 
           <Flex align="center" justify="space-between" p={4}>
@@ -74,7 +85,7 @@ const ChatRoom = () => {
             </IconButton>
           </Flex>
 
-          <VStack spacing={2} align="stretch" p={4}>
+          <VStack gap={2} align="stretch" p={4}>
             {rooms.map((room) => (
               <ChatRoomItem
                 key={room.id}
@@ -95,7 +106,7 @@ const ChatRoom = () => {
           {users.map((user) => {
             const Icon = user.icon;
             return (
-              <HStack key={user.name} spacing={2} mb={2} position="relative">
+              <HStack key={user.name} gap={2} mb={2} position="relative">
                 <Box position="relative">
                   <Icon fontSize="20px"/>
                   <Box
