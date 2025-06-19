@@ -1,6 +1,7 @@
 import { Message } from 'src/domain/chat/entities/message';
+import { GetMessageParams } from 'src/domain/chat/interfaces/message.interface';
 
 export interface MessageRepository {
   create(message: Message): Promise<string>;
-  getMessagesByRoomId(roomId: string, limit?: number, offset?: number): Promise<[Message[], number]>;
+  getMessagesByRoomId(params: GetMessageParams): Promise<[Message[], number]>;
 }

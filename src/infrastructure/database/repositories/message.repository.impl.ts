@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import { Message } from 'src/domain/chat/entities/message';
 import { Room } from 'src/domain/chat/entities/room';
 import { User } from 'src/domain/user/entities/user';
+import { GetMessageParams } from 'src/domain/chat/interfaces/message.interface';
 
 @Injectable()
 export class MessageRepositoryImpl implements MessageRepository {
@@ -17,23 +18,26 @@ export class MessageRepositoryImpl implements MessageRepository {
   async create(messageData: Message): Promise<string> {
     const message = new this.messageModel({
       content: messageData.content,
-      room: messageData.room ? messageData.room.id : null,
+      room: messageData.room ? new Types.ObjectId(messageData.room.id) : null,
       sender: messageData.sender ? messageData.sender.id : null,
+      createdAt: messageData.created || new Date(),
+      updatedAt: messageData.updated || new Date(),
     });
     const saved = await message.save();
     return saved.id;
   }
 
-  async getMessagesByRoomId(roomId: string, limit: number, offset: number): Promise<[Message[], number]> {
+  async getMessagesByRoomId(params: GetMessageParams): Promise<[Message[], number]> {
     const query: any = {
-      room: new Types.ObjectId(roomId),
+      room: new Types.ObjectId(params.roomId),
     };
     const [data, total] = await Promise.all([
       this.messageModel
         .find(query)
-        .skip(offset)
-        .limit(limit)
+        .skip(params.offset)
+        .limit(params.limit)
         .sort({ updatedAt: -1 })
+        .lean()
         .exec(),
       this.messageModel.countDocuments(query),
     ]);

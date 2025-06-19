@@ -1,8 +1,8 @@
-import { ChatRoomType } from 'src/domain/chat/value_objects/chat-room-type';
+import { RoomType } from 'src/domain/chat/value_objects/room-type';
 
-export interface FindRoomsParams {
+export interface GetRoomsParams {
   userId: string;
-  types?: ChatRoomType[];
+  types?: RoomType[];
   offset: number;
   limit: number;
 }

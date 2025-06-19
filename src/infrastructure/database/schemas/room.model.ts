@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { ChatRoomType } from 'src/domain/chat/value_objects/chat-room-type';
+import { RoomType } from 'src/domain/chat/value_objects/room-type';
 import { UserModel } from 'src/infrastructure/database/schemas/user.model';
 
 
@@ -17,8 +17,8 @@ export class RoomModel {
   @Prop({ type: Types.ObjectId, ref: UserModel.name, required: true })
   creator: Types.ObjectId;
 
-  @Prop({ enum: Object.values(ChatRoomType), default: ChatRoomType.DIRECT })
-  type: ChatRoomType;
+  @Prop({ enum: Object.values(RoomType), default: RoomType.DIRECT })
+  type: RoomType;
 
   @Prop()
   createdAt?: Date;

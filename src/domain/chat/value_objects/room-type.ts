@@ -1,5 +1,5 @@
 
-export const ChatRoomType = {
+export const RoomType = {
   DIRECT: 'direct',
   GROUP: 'group',
   PUBLIC: 'public',
@@ -8,4 +8,4 @@ export const ChatRoomType = {
   SUPPORT: 'support',
 } as const;
 
-export type ChatRoomType = (typeof ChatRoomType)[keyof typeof ChatRoomType];
+export type RoomType = (typeof RoomType)[keyof typeof RoomType];

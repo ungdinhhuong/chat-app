@@ -37,14 +37,11 @@ export class RoomService {
    * @param input
    */
   async getRoomsByUser(input: GetRoomsQueryDto): Promise<[Room[], number]> {
-    const page = input.page || 1;
-    const limit = input.limit || LIMIT_PAGE;
-
     return await this.roomRepository.getByUserPaginated({
       userId: input.user_id,
       types: input.types,
-      offset: (page - 1) * limit,
-      limit: limit,
+      offset: (input.page - 1) * input.limit,
+      limit: input.limit,
     });
   }
 

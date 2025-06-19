@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional, IsString, IsInt, Min, IsArray, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ChatRoomType } from 'src/domain/chat/value_objects/chat-room-type';
+import { RoomType } from 'src/domain/chat/value_objects/room-type';
 
 export class GetRoomsQueryDto {
   @IsString()
@@ -9,19 +9,19 @@ export class GetRoomsQueryDto {
 
   @IsOptional()
   @IsArray()
-  @IsEnum(ChatRoomType, { each: true })
+  @IsEnum(RoomType, { each: true })
   @Type(() => String)
-  types?: ChatRoomType[];
+  types?: RoomType[];
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  limit?: number;
+  limit: number = 10;
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page?: number;
+  page: number = 1;
 }

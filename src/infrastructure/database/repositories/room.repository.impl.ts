@@ -5,7 +5,7 @@ import { RoomModel } from 'src/infrastructure/database/schemas/room.model';
 import { Model, Types } from 'mongoose';
 import { Room } from 'src/domain/chat/entities/room';
 import { UserFactory } from 'src/infrastructure/factories/user.factory';
-import { FindRoomsParams } from 'src/domain/chat/interfaces/room.interface';
+import { GetRoomsParams } from 'src/domain/chat/interfaces/room.interface';
 
 @Injectable()
 export class RoomRepositoryImpl implements RoomRepository {
@@ -93,7 +93,7 @@ export class RoomRepositoryImpl implements RoomRepository {
     });
   }
 
-  async getByUserPaginated(params: FindRoomsParams): Promise<[Room[], number]> {
+  async getByUserPaginated(params: GetRoomsParams): Promise<[Room[], number]> {
     const query: any = {
       members: new Types.ObjectId(params.userId),
     };

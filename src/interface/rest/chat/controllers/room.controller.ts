@@ -7,6 +7,7 @@ import { Responder } from 'src/interface/rest/common/responder';
 import { JwtAuthGuard } from 'src/interface/rest/auth/guards/jwt-auth.guard';
 import { GetRoomsResponse } from 'src/interface/rest/chat/responses/get-rooms.response';
 import { GetRoomDetailResponse } from 'src/interface/rest/chat/responses/get-room-detail.response';
+import { LIMIT_PAGE } from 'src/shared/constants/const';
 
 @Controller('api/rooms')
 @UseGuards(JwtAuthGuard)
@@ -32,9 +33,10 @@ export class RoomController {
     if (!user.isAdmin && user.id !== query.user_id) {
       throw new ForbiddenException('Bạn không có quyền lấy danh sách phòng.');
     }
+
     const [rooms, total] = await this.roomService.getRoomsByUser(query);
 
-    return Responder.success(GetRoomsResponse.format(rooms, total), 'Lấy danh sách phòng chat thành công.');
+    return Responder.success(GetRoomsResponse.format(rooms, total, query.page, query.limit), 'Lấy danh sách phòng chat thành công.');
   }
 
   @Get(':id')

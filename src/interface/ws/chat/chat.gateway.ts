@@ -1,49 +1,62 @@
 import {
-  WebSocketGateway,
-  WebSocketServer,
-  SubscribeMessage,
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  MessageBody,
-  ConnectedSocket,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { MessageService } from 'src/application/chat/services/message.service';
 import { RedisService } from 'src/infrastructure/redis/redis.service';
+import { UserStatus } from 'src/domain/user/value_objects/user-status';
+import { UserService } from 'src/application/user/user.service';
+import { CreateMessageDto } from 'src/interface/rest/message/dto/create-message.dto';
+import { MessageType } from 'src/domain/chat/value_objects/message-type';
+import { TokenService } from 'src/application/auth/services/token.service';
+import { ConfigService } from '@nestjs/config';
+import { socketGatewayOptions } from 'src/infrastructure/config/socket.config';
+import { Message } from 'src/domain/chat/entities/message';
+import { plainToInstance } from 'class-transformer';
+import { User } from 'src/domain/user/entities/user';
 
-@WebSocketGateway({
-  cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true,
-  },
-})
+@WebSocketGateway(socketGatewayOptions)
 @Injectable()
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
   @WebSocketServer()
   server: Server;
 
   private connectedUsers = new Map<string, string>(); // socketId -> userId
 
   constructor(
-    private chatService: MessageService,
-    private redisService: RedisService,
+    private readonly configService: ConfigService,
+    private readonly chatService: MessageService,
+    private readonly redisService: RedisService,
+    private readonly userService: UserService,
+    private readonly tokenService: TokenService,
   ) {
-    // Subscribe to Redis channels
-    this.redisService.subscribe('chat_messages', (message) => {
-      const data = JSON.parse(message);
-      this.server.to(data.room).emit('newMessage', data);
-    });
+  }
+
+  async onModuleInit() {
+    await Promise.all([
+      this.redisService.subscribe('chat_messages', (message) => {
+        const parsed = JSON.parse(message);
+        const data = plainToInstance(Message, parsed);
+        console.log('Received message from Redis:', data);
+        this.server.to(data.room.id).emit('newMessage', data);
+      }),
+    ]);
   }
 
   async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
 
-    // Extract user info from token (implement JWT verification)
     const userId = await this.extractUserFromToken(client.handshake.auth.token);
     if (userId) {
       this.connectedUsers.set(client.id, userId);
-      // await this.chatService.updateUserStatus(userId, 'online');
+      await this.userService.updateStatus(userId, UserStatus.ONLINE);
     }
   }
 
@@ -53,7 +66,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const userId = this.connectedUsers.get(client.id);
     if (userId) {
       this.connectedUsers.delete(client.id);
-      // await this.chatService.updateUserStatus(userId, 'offline');
+      await this.userService.updateStatus(userId, UserStatus.OFFLINE);
     }
   }
 
@@ -83,18 +96,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const userId = this.connectedUsers.get(client.id);
     if (!userId) return;
 
-    // const message = await this.chatService.createMessage({
-    //   content: data.content,
-    //   sender: userId,
-    //   room: data.roomId,
-    // });
+    const dto: CreateMessageDto = {
+      room_id: data.roomId,
+      content: data.content,
+      type: MessageType.TEXT,
+    };
 
-    // Publish to Redis for scalability
+    const messageCreated = await this.chatService.createMessage(dto, userId);
     await this.redisService.publish(
       'chat_messages',
-      JSON.stringify({
-        room: data.roomId,
-      }),
+      JSON.stringify(messageCreated),
     );
   }
 
@@ -113,8 +124,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private async extractUserFromToken(token: string): Promise<string | null> {
-    // Implement JWT token verification
-    // Return userId if valid, null if invalid
-    return null;
+    return await this.tokenService.extractUserFromToken(token);
   }
 }

@@ -1,6 +1,4 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UserModel, UserSchema } from 'src/infrastructure/database/schemas/user.model';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
@@ -12,6 +10,7 @@ import { AuthController } from 'src/interface/rest/auth/controllers/auth.control
 import { JwtStrategy } from 'src/interface/rest/auth/strategies/jwt.strategy';
 import { UserModule } from 'src/interface/rest/user/user.module';
 
+@Global()
 @Module({
   imports: [
     UserModule,
@@ -35,6 +34,6 @@ import { UserModule } from 'src/interface/rest/user/user.module';
       useClass: AuthRepositoryImpl,
     },
   ],
-
+  exports: [TokenService]
 })
 export class AuthModule {}

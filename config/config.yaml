@@ -26,6 +26,11 @@ redis:
   password: ${REDIS_PASSWORD}
   db: ${REDIS_DB}
 
+socket:
+  cors:
+    origin: ${SOCKET_FRONTEND_URL}
+  path: ${SOCKET_PATH}
+
 queue:
   email:
     concurrency: ${EMAIL_QUEUE_CONCURRENCY}

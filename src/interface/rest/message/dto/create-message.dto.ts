@@ -10,10 +10,6 @@ export class CreateMessageDto {
   @IsNotEmpty()
   content: string;
 
-  @IsString()
-  @IsNotEmpty()
-  sender_id: string;
-
   @IsOptional()
   @IsEnum(MessageType, {
     message: `type must be one of: ${Object.values(MessageType).join(', ')}`,
