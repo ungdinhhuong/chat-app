@@ -1,5 +1,6 @@
 import {Box, HStack, Text, VStack} from "@chakra-ui/react";
 import {FaCheck} from "react-icons/fa";
+import {formatTime} from "@/utils/date.utils";
 
 export const ChatMessageBubble = ({message, time, isOwnMessage = false, sender, seen = false,}) => {
   return (
@@ -18,12 +19,18 @@ export const ChatMessageBubble = ({message, time, isOwnMessage = false, sender, 
         >
           <Text>{message}</Text>
         </Box>
-        <HStack spacing={1} fontSize="xs" color="gray.400">
+        <HStack gap={1} fontSize="xs" color="gray.400">
           <Text>{time}</Text>
-          {isOwnMessage && seen && (<HStack spacing="1px">
+          {isOwnMessage && seen && (<HStack gap="1px">
             <FaCheck w={3} h={3} color="blue.300"/>
           </HStack>)}
         </HStack>
+        {/*{message.status === 'pending' ? (*/}
+        {/*  <Text fontSize="xs" color="gray.400">Đang gửi...</Text>*/}
+        {/*) : (*/}
+        {/*  <Text fontSize="xs" color="gray.500">{formatTime(message.created)}</Text>*/}
+        {/*)}*/}
+
       </VStack>
     </HStack>
   );

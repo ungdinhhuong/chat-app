@@ -1,132 +1,51 @@
-import React, {useState} from "react";
-import {
-  Avatar,
-  Badge,
-  Box,
-  Button,
-  Flex,
-  HStack,
-  IconButton,
-  Input,
-  Spacer,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import {FaLaptop, FaPlus, FaUserNurse, FaUserTie} from 'react-icons/fa';
+import React, {useEffect, useRef, useState} from "react";
+import {Badge, Box, Button, Flex, Input, Stack, Text, VStack,} from "@chakra-ui/react";
 import {ChatMessageBubble} from "@/features/chat/components/ChatMessageBubble.jsx";
-import {ChatRoomItem} from "@/features/chat/components/ChatRoomItem.jsx";
-import {ColorModeButton} from "@/components/ui/color-mode";
-import {CiLogout} from "react-icons/ci";
-import {useDispatch} from "react-redux";
-import {logout} from "@/features/auth/authSlice";
-import {toast} from "react-toastify";
+import socket from "@/services/socket";
+import {useChat} from "@/features/chat/hooks/useChat";
+import {Sidebar} from "@/features/chat/components/Sidebar";
+import {useDispatch, useSelector} from "react-redux";
+import {selectSelectedRoomId} from "@/features/chat/chatSelectors";
 
 const ChatRoom = () => {
-  const [selectedRoom, setSelectedRoom] = useState(null);
-
-  const rooms = [
-    {
-      id: 1,
-      name: "Nhóm Công Việc",
-      lastMessage: "Chào mọi người!",
-      time: "5 phút trước",
-      unread: 2,
-    },
-    {
-      id: 2,
-      name: "Bạn Bè",
-      lastMessage: "Hẹn gặp lại nhé!",
-      time: "30 phút trước",
-      unread: 0,
-    },
-  ];
-
-  const messages = [
-    {sender: "alice", text: "Chào mọi người!", time: "12:10"},
-    {sender: "bob", text: "Hi các bạn! Hôm nay làm việc thế nào?", time: "12:15"},
-    {sender: "admin", text: "Xin chào Alice!", time: "12:17"},
-  ];
-
-  const users = [
-    {name: "admin", icon: FaUserTie},
-    {name: "alice", icon: FaLaptop},
-    {name: "bob", icon: FaUserNurse},
-  ];
-
   const dispatch = useDispatch();
+  const selectedRoom = useSelector(selectSelectedRoomId);
 
-  const executeLogout = () => {
-    dispatch(logout());
-    toast.success("Đăng xuất thành công")
-  }
+  const [inputValue, setInputValue] = useState('');
+  const {messages, send} = useChat(selectedRoom);
+
+  const handleSend = () => {
+    const content = inputValue.trim();
+    if (!content || !selectedRoom) return;
+
+    send(content);
+    setInputValue('');
+  };
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (!selectedRoom) return;
+    socket.emit("joinRoom", {roomId: selectedRoom});
+    socket.on("joinedRoom", ({roomId}) => {
+      console.log(`[Socket] Đã vào phòng ${roomId}`);
+    });
+    return () => {
+      socket.emit("leaveRoom", {roomId: selectedRoom});
+      console.log(`[Socket] Đã ra khỏi phòng ${selectedRoom}`);
+    };
+  }, [selectedRoom]);
 
   return (
     <Flex h="100vh">
-      <Flex direction="column" justify="space-between" h="100%" w="300px" borderRightWidth="1px" borderColor="gray.200">
-        <Box>
-          <Flex align="center" p={4} borderBottomWidth="1px" borderColor="gray.200">
-            <Avatar.Root>
-              <Avatar.Fallback name="admin"/>
-              <Avatar.Image src="https://bit.ly/sage-adebayo"/>
-            </Avatar.Root>
-            <Text fontWeight="bold" px={4}>admin</Text>
-            <Spacer/>
-            <ColorModeButton/>
-            <IconButton onClick={executeLogout} size="sm" variant={'outline'} aria-label="Settings">
-              <CiLogout/>
-            </IconButton>
-          </Flex>
-
-          <Flex align="center" justify="space-between" p={4}>
-            <Text fontSize="sm" fontWeight="semibold">Phòng Chat</Text>
-            <IconButton size="xs" aria-label="Thêm phòng" variant="outline">
-              <FaPlus/>
-            </IconButton>
-          </Flex>
-
-          <VStack gap={2} align="stretch" p={4}>
-            {rooms.map((room) => (
-              <ChatRoomItem
-                key={room.id}
-                title="Nhóm Công Việc"
-                message="Chào mọi người!"
-                time="4 giờ trước"
-                unreadCount={2}
-                isActive={false}
-                onClick={() => setSelectedRoom(room.id)}
-              />
-            ))}
-          </VStack>
-        </Box>
-        <Box borderTopWidth="1px" fontSize={'sm'} borderColor={"gray.200"} p={4} mt={4}>
-          <Text mb={2}>
-            Đang online ({users.length})
-          </Text>
-          {users.map((user) => {
-            const Icon = user.icon;
-            return (
-              <HStack key={user.name} gap={2} mb={2} position="relative">
-                <Box position="relative">
-                  <Icon fontSize="20px"/>
-                  <Box
-                    position="absolute"
-                    bottom={"-0.25rem"}
-                    right={"-0.25rem"}
-                    w="0.75rem"
-                    h="0.75rem"
-                    bg="green.400"
-                    borderRadius="full"
-                    border="2px solid white"
-                  />
-                </Box>
-                <Text>{user.name}</Text>
-              </HStack>
-            );
-          })}
-        </Box>
-      </Flex>
-
+      <Sidebar/>
       <Flex flex={1} direction="column">
         {selectedRoom ? (
           <>
@@ -141,26 +60,19 @@ const ChatRoom = () => {
               </Box>
             </Flex>
 
-            <VStack flex={1} align="start" spacing={3} overflowY="auto" bg="gray.100" p={4}>
-              {messages.map((msg, i) => (
-                <>
-                  <ChatMessageBubble
-                    message="Hẹn gặp lại nhé!"
-                    time="11:50"
-                    sender="alice"
-                  />
-
-                  <ChatMessageBubble
-                    message="OK, tạm biệt!"
-                    time="11:55"
-                    isOwnMessage
-                    seen
-                  />
-                </>
+            <VStack flex={1} align="start" gap={3} overflowY="auto" bg="gray.100" p={4}>
+              {messages.map((msg) => (
+                <ChatMessageBubble
+                  key={msg.id}
+                  message={msg.content}
+                  time={msg.updated}
+                  sender={msg.sender?.username || "..."}
+                />
               ))}
+              <div ref={messagesEndRef}/>
             </VStack>
 
-            <Stack spacing={4} p={4} borderTopWidth="1px" borderColor={"gray.200"}
+            <Stack gap={4} p={4} borderTopWidth="1px" borderColor={"gray.200"}
                    direction={{base: 'column', md: 'row'}} w={'full'}>
               <Input
                 type={'text'}
@@ -173,6 +85,8 @@ const ChatRoom = () => {
                   outline: 'none',
                 }}
                 bg="white"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
               />
               <Button
                 bg={'blue.500'}
@@ -180,7 +94,9 @@ const ChatRoom = () => {
                 color={'white'}
                 flex={'1 0 100px'}
                 _hover={{bg: 'blue.600'}}
-                _focus={{bg: 'blue.600'}}>
+                _focus={{bg: 'blue.600'}}
+                onClick={handleSend}
+              >
                 Gửi
               </Button>
             </Stack>

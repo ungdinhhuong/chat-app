@@ -12,15 +12,16 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // sử dụng localStorage
 import chatReducer from '@/features/chat/chatSlice'
-import onlineReducer from '@/features/online/onlineSlice'
-import { socketMiddleware } from '@/middleware/socketMiddleware'
 import authReducer from '@/features/auth/authSlice'
+import { socketMiddleware } from '@/middleware/socketMiddleware'
 
 const rootReducer = combineReducers({
   auth: authReducer,
   chat: chatReducer,
-  online: onlineReducer
 })
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = typeof store.dispatch;
 
 const persistConfig = {
   key: 'root',
@@ -37,7 +38,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(),
+    }).concat(socketMiddleware),
 })
 
 export const persistor = persistStore(store)

@@ -1,5 +1,14 @@
-import { io } from 'socket.io-client'
+import { io } from 'socket.io-client';
+import {getAccessTokenFromPersist} from "@/utils/storage.utils";
 
-const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000')
+const token = getAccessTokenFromPersist();
 
-export default socket
+const socket = io(import.meta.env.VITE_SOCKET_URL!, {
+  auth: {
+    token,
+  },
+  transports: ['websocket'],
+  path: '/socket.io',
+});
+
+export default socket;

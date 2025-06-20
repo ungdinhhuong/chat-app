@@ -1,6 +1,15 @@
 import { Box, Flex, Text, Badge } from '@chakra-ui/react'
 
-export function ChatRoomItem({ title, message, time, unreadCount, isActive, onClick }) {
+type ChatRoomItemProps = {
+  title: string;
+  message: string;
+  time: string;
+  unreadCount: number;
+  isActive: boolean;
+  onClick: () => void;
+};
+
+export function ChatRoomItem({ title, message, time, unreadCount, isActive, onClick }: ChatRoomItemProps) {
   return (
     <Box
       p={3}
@@ -12,7 +21,7 @@ export function ChatRoomItem({ title, message, time, unreadCount, isActive, onCl
       onClick={onClick}
     >
       <Flex justify="space-between" align="center" mb={1}>
-        <Text fontWeight="semibold" fontSize="sm" color="black">
+        <Text fontWeight="semibold" fontSize="sm" color="black" lineClamp={1}>
           {title}
         </Text>
         <Flex gap={2} align="center">
@@ -32,7 +41,7 @@ export function ChatRoomItem({ title, message, time, unreadCount, isActive, onCl
           )}
         </Flex>
       </Flex>
-      <Text fontSize="sm" color="gray.600" noOfLines={1}>
+      <Text fontSize="sm" color="gray.600" lineClamp={1}>
         {message}
       </Text>
     </Box>

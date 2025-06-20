@@ -2,7 +2,7 @@ import {Button, Heading, Input, Stack, Text} from "@chakra-ui/react";
 import {FormControl, FormLabel} from "@chakra-ui/form-control";
 import AuthLayout from "@/components/layout/AuthLayout";
 import React, {useState} from "react";
-import {authService} from "@/features/auth/authService";
+import {authService} from "@/features/auth/auth.service";
 import {toast} from "react-toastify";
 import {ROUTE} from "@/consts/ROUTE";
 import {AppLink} from "@/components/RouterLink";

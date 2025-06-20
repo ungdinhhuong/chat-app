@@ -12,4 +12,8 @@ const formatTime = (date: Date) => {
   return date.toLocaleDateString('vi-VN');
 };
 
-export {formatTime};
+const formatTimeVN = (dateStr: string) => {
+  return formatTime(new Date(dateStr.replace(" ", "T")))
+}
+
+export {formatTime, formatTimeVN};

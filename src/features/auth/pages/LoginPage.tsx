@@ -5,7 +5,7 @@ import {toast} from 'react-toastify';
 import AuthLayout from "@/components/layout/AuthLayout";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {authService} from "@/features/auth/authService";
+import {authService} from "@/features/auth/auth.service";
 import {loginSuccess} from "@/features/auth/authSlice";
 import {ROUTE} from "@/consts/ROUTE";
 import {AppLink} from "@/components/RouterLink";
