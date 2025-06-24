@@ -3,8 +3,8 @@ export class User {
   email?: string;
   password?: string;
   username?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  created: Date;
+  updated: Date;
 
   static fromId(id: string): User {
     const user = new User();

@@ -52,11 +52,11 @@ export class AuthController {
           email: authUser.email,
         },
         token: {
-          token_type: 'Bearer',
-          expires_in: accessToken.expiresIn,
-          expires_at: TimeUtil.formatToVN(accessToken.expiresAt),
-          access_token: accessToken.id,
-          refresh_token: refreshToken.id,
+          tokenType: 'Bearer',
+          expiresIn: accessToken.expiresIn,
+          expiresAt: TimeUtil.formatToVN(accessToken.expiresAt),
+          accessToken: accessToken.id,
+          refreshToken: refreshToken.id,
         },
       },
       'Đăng nhập thành công',
@@ -69,11 +69,11 @@ export class AuthController {
     const { accessToken, refreshToken } = await this.authService.refreshToken(dto);
     return Responder.success(
       {
-        token_type: 'Bearer',
-        expires_in: accessToken.expiresIn,
-        expires_at: TimeUtil.formatToVN(accessToken.expiresAt),
-        access_token: accessToken.id,
-        refresh_token: refreshToken.id,
+        tokenType: 'Bearer',
+        expiresIn: accessToken.expiresIn,
+        expiresAt: TimeUtil.formatToVN(accessToken.expiresAt),
+        accessToken: accessToken.id,
+        refreshToken: refreshToken.id,
       },
       'Lấy token mới thành công',
     );

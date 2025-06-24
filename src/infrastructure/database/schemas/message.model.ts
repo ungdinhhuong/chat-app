@@ -1,18 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { MessageType } from 'src/domain/chat/value_objects/message-type';
-import { RoomModel } from 'src/infrastructure/database/schemas/room.model';
-import { UserModel } from 'src/infrastructure/database/schemas/user.model';
 
 @Schema({ collection: 'messages', timestamps: true })
-export class MessageModel extends Document {
+export class MessageModel {
   @Prop({ required: true })
   content: string;
 
-  @Prop({ type: Types.ObjectId, ref: UserModel.name, required: true })
+  @Prop({ type: Types.ObjectId, ref: 'UserModel', required: true })
   sender?: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: RoomModel.name, required: true })
+  @Prop({ type: Types.ObjectId, ref: 'RoomModel', required: true })
   room: Types.ObjectId;
 
   @Prop({ enum: Object.values(MessageType), default: MessageType.TEXT })
@@ -28,4 +26,5 @@ export class MessageModel extends Document {
   updatedAt?: Date;
 }
 
+export type MessageDocument = MessageModel & Document;
 export const MessageSchema = SchemaFactory.createForClass(MessageModel);

@@ -5,8 +5,8 @@ import { MessageModel } from 'src/infrastructure/database/schemas/message.model'
 import { Model, Types } from 'mongoose';
 import { Message } from 'src/domain/chat/entities/message';
 import { Room } from 'src/domain/chat/entities/room';
-import { User } from 'src/domain/user/entities/user';
 import { GetMessageParams } from 'src/domain/chat/interfaces/message.interface';
+import { UserFactory } from 'src/infrastructure/factories/user.factory';
 
 @Injectable()
 export class MessageRepositoryImpl implements MessageRepository {
@@ -36,7 +36,7 @@ export class MessageRepositoryImpl implements MessageRepository {
         .find(query)
         .skip(params.offset)
         .limit(params.limit)
-        .sort({ updatedAt: -1 })
+        .populate('sender', 'id username')
         .lean()
         .exec(),
       this.messageModel.countDocuments(query),
@@ -47,7 +47,12 @@ export class MessageRepositoryImpl implements MessageRepository {
       message.id = item._id.toString();
       message.content = item.content;
       message.room = Room.fromId(item.room.toString());
-      message.sender = item.sender ? User.fromId(item.sender._id.toString()) : null;
+
+      const senderData = item.sender as any;
+      message.sender = senderData ? UserFactory.fromObject({
+        id: senderData._id.toString(),
+        username: senderData.username,
+      }) : null;
       message.type = item.type;
       message.isEdited = item.isEdited;
       message.created = item.createdAt;

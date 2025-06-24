@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import { Room } from 'src/domain/chat/entities/room';
 import { UserFactory } from 'src/infrastructure/factories/user.factory';
 import { GetRoomsParams } from 'src/domain/chat/interfaces/room.interface';
+import { Message } from 'src/domain/chat/entities/message';
 
 @Injectable()
 export class RoomRepositoryImpl implements RoomRepository {
@@ -108,6 +109,7 @@ export class RoomRepositoryImpl implements RoomRepository {
         .skip(params.offset)
         .limit(params.limit)
         .populate('members', 'username')
+        .populate('lastMessageId', 'content updatedAt')
         .sort({ updatedAt: -1 })
         .exec(),
       this.roomModel.countDocuments(query),
@@ -118,14 +120,23 @@ export class RoomRepositoryImpl implements RoomRepository {
       room.id = roomData._id.toString();
       room.name = roomData.name;
       room.type = roomData.type;
-      room.createdAt = roomData.createdAt;
-      room.updatedAt = roomData.updatedAt;
+      room.created = roomData.createdAt;
+      room.updated = roomData.updatedAt;
 
       const membersData = roomData.members as any[];
       room.members = membersData.map(member => UserFactory.fromObject({
         id: member._id.toString(),
         username: member.username,
       }));
+
+      const messageData = roomData.lastMessageId as any;
+      if (messageData) {
+        const message = new Message();
+        message.id = messageData._id.toString();
+        message.content = messageData.content;
+        message.updated = messageData.updatedAt;
+        room.lastMessage = message;
+      }
 
       return room;
     })

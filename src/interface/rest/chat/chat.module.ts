@@ -9,7 +9,7 @@ import { RoomModel, RoomSchema } from 'src/infrastructure/database/schemas/room.
 import { MessageModel, MessageSchema } from 'src/infrastructure/database/schemas/message.model';
 import { RoomService } from 'src/application/chat/services/room.service';
 import { MessageService } from 'src/application/chat/services/message.service';
-import { MessageController } from 'src/interface/rest/message/controllers/message.controller';
+import { MessageController } from 'src/interface/rest/chat/controllers/message.controller';
 import { ChatGateway } from 'src/interface/ws/chat/chat.gateway';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 

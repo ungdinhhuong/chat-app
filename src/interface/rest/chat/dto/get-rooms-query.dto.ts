@@ -5,7 +5,7 @@ import { RoomType } from 'src/domain/chat/value_objects/room-type';
 export class GetRoomsQueryDto {
   @IsString()
   @IsNotEmpty()
-  user_id: string;
+  userId: string;
 
   @IsOptional()
   @IsArray()

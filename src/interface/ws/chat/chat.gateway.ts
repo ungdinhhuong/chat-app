@@ -3,35 +3,33 @@ import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MessageService } from 'src/application/chat/services/message.service';
 import { RedisService } from 'src/infrastructure/redis/redis.service';
 import { UserStatus } from 'src/domain/user/value_objects/user-status';
 import { UserService } from 'src/application/user/user.service';
-import { CreateMessageDto } from 'src/interface/rest/message/dto/create-message.dto';
 import { MessageType } from 'src/domain/chat/value_objects/message-type';
 import { TokenService } from 'src/application/auth/services/token.service';
-import { ConfigService } from '@nestjs/config';
 import { socketGatewayOptions } from 'src/infrastructure/config/socket.config';
 import { Message } from 'src/domain/chat/entities/message';
 import { plainToInstance } from 'class-transformer';
-import { User } from 'src/domain/user/entities/user';
+import { CreateMessageDto } from 'src/interface/rest/chat/dto/create-message.dto';
 
 @WebSocketGateway(socketGatewayOptions)
 @Injectable()
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   @WebSocketServer()
   server: Server;
 
   private connectedUsers = new Map<string, string>(); // socketId -> userId
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly chatService: MessageService,
     private readonly redisService: RedisService,
     private readonly userService: UserService,
@@ -39,20 +37,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   ) {
   }
 
-  async onModuleInit() {
+  async afterInit() {
     await Promise.all([
       this.redisService.subscribe('chat_messages', (message) => {
         const parsed = JSON.parse(message);
         const data = plainToInstance(Message, parsed);
-        console.log('Received message from Redis:', data);
         this.server.to(data.room.id).emit('newMessage', data);
       }),
     ]);
   }
 
   async handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
-
     const userId = await this.extractUserFromToken(client.handshake.auth.token);
     if (userId) {
       this.connectedUsers.set(client.id, userId);
@@ -61,8 +56,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   }
 
   async handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
-
     const userId = this.connectedUsers.get(client.id);
     if (userId) {
       this.connectedUsers.delete(client.id);
@@ -91,22 +84,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   @SubscribeMessage('sendMessage')
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { content: string; roomId: string },
+    @MessageBody() data: { content: string; roomId: string , tempId?: string }
   ) {
     const userId = this.connectedUsers.get(client.id);
     if (!userId) return;
-
     const dto: CreateMessageDto = {
-      room_id: data.roomId,
       content: data.content,
+      roomId: data.roomId,
       type: MessageType.TEXT,
     };
-
     const messageCreated = await this.chatService.createMessage(dto, userId);
-    await this.redisService.publish(
-      'chat_messages',
-      JSON.stringify(messageCreated),
-    );
+    client.emit('sendMessageResponse', { success: true, messageCreated, tempId: data.tempId });
+    await this.redisService.publish('chat_messages', JSON.stringify(messageCreated));
   }
 
   @SubscribeMessage('typing')

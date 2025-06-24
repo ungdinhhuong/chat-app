@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { CreateMessageDto } from 'src/interface/rest/message/dto/create-message.dto';
+import { CreateMessageDto } from 'src/interface/rest/chat/dto/create-message.dto';
 import { MessageService } from 'src/application/chat/services/message.service';
 import { Responder } from 'src/interface/rest/common/responder';
-import { GetMessageResponse } from 'src/interface/rest/message/responses/get-message.response';
-import { GetMessagesQueryDto } from 'src/interface/rest/message/dto/get-messages-query.dto';
+import { GetMessageResponse } from 'src/interface/rest/chat/responses/get-message.response';
+import { GetMessagesQueryDto } from 'src/interface/rest/chat/dto/get-messages-query.dto';
 import { CurrentUser } from 'src/interface/rest/common/decorators/current-user.decorator';
 import { JwtAuthGuard } from 'src/interface/rest/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/domain/auth/entities/auth-user';
@@ -36,6 +36,6 @@ export class MessageController {
     // Kiểm tra user có quyền truy cập vào phòng hay không
 
     const [messages, total] = await this.messageService.getMessages(dto);
-    return Responder.success(GetMessageResponse.format(messages, total), 'Lấy danh sách tin nhắn thành công.');
+    return Responder.success(GetMessageResponse.format(messages, total, dto.limit, dto.page), 'Lấy danh sách tin nhắn thành công.');
   }
 }
