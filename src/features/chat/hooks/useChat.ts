@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {selectMessagesByRoom} from "@/features/chat/chatSelectors";
 import {v4 as uuidv4} from 'uuid';
-import {MessageRedux} from "@/features/chat/types/message.type";
+import {MessageRedux, MessageStatus} from "@/features/chat/types/message.type";
 import {addTempMessage, sendMessage} from "@/features/chat/chatSlice";
 import {selectUser} from "@/features/auth/authSelectors";
 import {User} from "@/features/auth/types/auth.type";
@@ -42,6 +42,7 @@ export function useChat(roomId: string | null) {
       isEdited: false,
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
+      status: MessageStatus.SENDING
     };
 
     dispatch(addTempMessage({roomId, message: tempMessage}));

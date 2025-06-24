@@ -1,11 +1,22 @@
 import {Box, HStack, Text, VStack} from "@chakra-ui/react";
 import {FaCheck} from "react-icons/fa";
+import {ChatMessageBubbleProps, MessageStatus} from "@/features/chat/types/message.type";
 import {formatTime} from "@/utils/date.utils";
+import {useSelector} from "react-redux";
+import {selectUser} from "@/features/auth/authSelectors";
 
-export const ChatMessageBubble = ({message, time, isOwnMessage = false, sender, seen = false,}) => {
+export const ChatMessageBubble = ({msg}: ChatMessageBubbleProps) => {
+  const user = useSelector(selectUser);
+
+  const message= msg.content;
+  const time= msg.updated;
+  const isOwnMessage = msg.sender?.id === user?.id;
+  const sender= msg.sender?.username || "..."
+  const seen = true;
+
   return (
     <HStack justify={isOwnMessage ? "flex-end" : "flex-start"} w="100%" mb={2}>
-      <VStack align={isOwnMessage ? "flex-end" : "flex-start"} spacing={1}>
+      <VStack align={isOwnMessage ? "flex-end" : "flex-start"} gap={1}>
         {!isOwnMessage && (<Text fontSize="xs" color="gray.500" ml={2}>
           {sender}
         </Text>)}
@@ -22,14 +33,14 @@ export const ChatMessageBubble = ({message, time, isOwnMessage = false, sender, 
         <HStack gap={1} fontSize="xs" color="gray.400">
           <Text>{time}</Text>
           {isOwnMessage && seen && (<HStack gap="1px">
-            <FaCheck w={3} h={3} color="blue.300"/>
+            <FaCheck size={12} color="blue.300"/>
           </HStack>)}
         </HStack>
-        {/*{message.status === 'pending' ? (*/}
-        {/*  <Text fontSize="xs" color="gray.400">Đang gửi...</Text>*/}
-        {/*) : (*/}
-        {/*  <Text fontSize="xs" color="gray.500">{formatTime(message.created)}</Text>*/}
-        {/*)}*/}
+        {msg.status === MessageStatus.SENDING ? (
+          <Text fontSize="xs" color="gray.400">Đang gửi...</Text>
+        ) : (
+          <Text fontSize="xs" color="gray.500">{formatTime(new Date(msg.created))}</Text>
+        )}
 
       </VStack>
     </HStack>

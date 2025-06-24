@@ -1,6 +1,10 @@
 import {User} from "@/features/auth/types/auth.type";
 import {MessageType} from "@/consts/message-type";
 
+export type ChatMessageBubbleProps = {
+  msg: MessageRedux;
+};
+
 export interface MessagePayload {
   id: string;
   content: string,
@@ -14,6 +18,7 @@ export interface MessagePayload {
 export type MessageRedux = Omit<MessagePayload, 'created' | 'updated'> & {
   created: string;
   updated: string;
+  status: MessageStatus;
 };
 
 export interface SendMessagePayload {
@@ -21,3 +26,12 @@ export interface SendMessagePayload {
   roomId: string;
   content: string;
 }
+
+export const MessageStatus = {
+  SENDING: 'SENDING',
+  SENT: 'SENT',
+  FAILED: 'FAILED',
+  RECEIVED: 'RECEIVED',
+  READ: 'READ'
+}
+export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];

@@ -26,17 +26,17 @@ const chatSlice = createSlice({
       // gửi socket ở middleware, reducer này chỉ là trigger
     },
     addTempMessage(state, action: PayloadAction<{ roomId: string; message: MessageRedux }>) {
-      const { roomId, message } = action.payload;
+      const {roomId, message} = action.payload;
       state.messages[roomId] ||= [];
       state.messages[roomId].push(message);
     },
     receiveMessage(state, action: PayloadAction<{ roomId: string; message: MessageRedux }>) {
-      const { roomId, message } = action.payload;
+      const {roomId, message} = action.payload;
       state.messages[roomId] ||= [];
       state.messages[roomId].push(message);
     },
     updateMessage(state, action: PayloadAction<{ roomId: string; tempId: string; newMessage: MessageRedux }>) {
-      const { roomId, tempId, newMessage } = action.payload;
+      const {roomId, tempId, newMessage} = action.payload;
       const mgs = state.messages[roomId] || [];
       const index = mgs.findIndex(m => m.id === tempId);
       if (index !== -1) mgs[index] = newMessage;

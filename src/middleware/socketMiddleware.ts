@@ -2,7 +2,7 @@ import {receiveMessage, sendMessage as sendMessageAction, updateMessage} from '@
 import socket from '@/services/socket'
 import {RootState} from "@/store";
 import {EnhancedStore, Middleware} from "@reduxjs/toolkit";
-import {SendMessagePayload} from "@/features/chat/types/message.type";
+import {MessageStatus, SendMessagePayload} from "@/features/chat/types/message.type";
 
 export const socketMiddleware: Middleware<{}, RootState> = store => next => (action: any) => {
   if (action.type === sendMessageAction.type) {
@@ -38,8 +38,13 @@ export const initSocketListeners = (store: EnhancedStore<RootState>) => {
   // })
 
   socket.on('sendMessageResponse', (res) => {
-    if (res.success && res.message && res.tempId) {
-      store.dispatch(updateMessage({ roomId: res.roomId, tempId: res.tempId, newMessage: res.message }));
+    if (res.success && res.messageCreated && res.tempId) {
+      store.dispatch(updateMessage({
+          roomId: res.messageCreated.room.id,
+          tempId: res.tempId,
+          newMessage: {...res.messageCreated, status: MessageStatus.SENT}
+        })
+      );
     } else {
       console.warn('[Socket] Failed:', res?.error || 'Unknown error');
     }

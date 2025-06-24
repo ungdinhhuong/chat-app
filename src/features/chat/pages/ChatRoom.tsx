@@ -1,14 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Badge, Box, Button, Flex, Input, Stack, Text, VStack,} from "@chakra-ui/react";
 import {ChatMessageBubble} from "@/features/chat/components/ChatMessageBubble.jsx";
-import socket from "@/services/socket";
 import {useChat} from "@/features/chat/hooks/useChat";
 import {Sidebar} from "@/features/chat/components/Sidebar";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {selectSelectedRoomId} from "@/features/chat/chatSelectors";
 
 const ChatRoom = () => {
-  const dispatch = useDispatch();
   const selectedRoom = useSelector(selectSelectedRoomId);
 
   const [inputValue, setInputValue] = useState('');
@@ -24,24 +22,12 @@ const ChatRoom = () => {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    if (!selectedRoom) return;
-    socket.emit("joinRoom", {roomId: selectedRoom});
-    socket.on("joinedRoom", ({roomId}) => {
-      console.log(`[Socket] Đã vào phòng ${roomId}`);
-    });
-    return () => {
-      socket.emit("leaveRoom", {roomId: selectedRoom});
-      console.log(`[Socket] Đã ra khỏi phòng ${selectedRoom}`);
-    };
-  }, [selectedRoom]);
 
   return (
     <Flex h="100vh">
@@ -64,9 +50,7 @@ const ChatRoom = () => {
               {messages.map((msg) => (
                 <ChatMessageBubble
                   key={msg.id}
-                  message={msg.content}
-                  time={msg.updated}
-                  sender={msg.sender?.username || "..."}
+                  msg={msg}
                 />
               ))}
               <div ref={messagesEndRef}/>
