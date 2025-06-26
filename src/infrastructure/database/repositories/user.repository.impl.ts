@@ -24,4 +24,13 @@ export class UserRepositoryImpl implements UserRepository {
     const documents = await query.lean().exec();
     return documents.map(item => UserFactory.fromDocument(item) as User);
   }
+
+  async findById(userId: string): Promise<User | null> {
+    const document = await this.userModel.findById(userId).lean().exec();
+    if(!document) {
+      return null
+    }
+    return UserFactory.fromDocument(document) as User;
+  }
+
 }

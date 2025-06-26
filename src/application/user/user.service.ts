@@ -19,4 +19,8 @@ export class UserService {
   async getByIds(userIds: string[]): Promise<User[]> {
     return this.userRepository.getByIds(userIds);
   }
+
+  async findById(userId: string): Promise<User | null> {
+    return this.userRepository.findById(userId);
+  }
 }

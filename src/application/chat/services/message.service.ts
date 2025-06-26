@@ -7,13 +7,14 @@ import { Room } from 'src/domain/chat/entities/room';
 import { User } from 'src/domain/user/entities/user';
 import { MessageType } from 'src/domain/chat/value_objects/message-type';
 import { GetMessagesQueryDto } from 'src/interface/rest/chat/dto/get-messages-query.dto';
-import { LIMIT_PAGE } from 'src/shared/constants/const';
+import { UserService } from 'src/application/user/user.service';
 
 @Injectable()
 export class MessageService {
   constructor(
     @Inject(REPOSITORY.MessageRepository)
     private readonly messageRepository: MessageRepository,
+    private readonly userService: UserService,
   ) {
   }
 
@@ -31,7 +32,16 @@ export class MessageService {
     message.created = new Date();
     message.updated = new Date();
     message.id = await this.messageRepository.create(message);
-    return message
+
+    // Lấy thông tin người gửi để trả về FE hiển thị
+    if (senderId) {
+      const sender = await this.userService.findById(senderId);
+      if (sender) {
+        message.sender = sender;
+      }
+    }
+
+    return message;
   }
 
   /**
