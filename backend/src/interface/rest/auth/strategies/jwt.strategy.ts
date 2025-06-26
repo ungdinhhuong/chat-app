@@ -23,6 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) { //Tham số thứ 
     if (!user) {
       throw new UnauthorizedException('Invalid token');
     }
-    return user;
+    return {...user, tokenType: payload.tokenType };
   }
 }

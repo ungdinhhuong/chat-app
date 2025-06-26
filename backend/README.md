@@ -118,3 +118,16 @@ RoomSchema.pre(/^find/, function (next) {
   next();
 });
 ```
+
+Guard và Strategy
+```text
+Client gửi HTTP Request với Authorization: Bearer <token>
+              ↓
+        → Guard (canActivate)
+              ↓
+        → Strategy (validate JWT)
+              ↓
+       → Guard (handleRequest, kiểm tra user)
+              ↓
+        → Controller (user đã được xác thực)
+```

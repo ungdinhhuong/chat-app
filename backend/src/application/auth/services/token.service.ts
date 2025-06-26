@@ -12,22 +12,31 @@ export class TokenService {
   ) {
   }
 
-  async generateTokens(userId: string, email: string): Promise<{ accessToken: Token; refreshToken: Token }> {
+  async generateTokens(userId: string): Promise<{ accessToken: Token; refreshToken: Token }> {
     const accessExpiry = this.configService.get<string>('jwt.access.expiry') ?? '900'; // 15 minutes
     const refreshExpiry = this.configService.get<string>('jwt.refresh.expiry') ?? '604800'; // 7 days
 
     // Payload sẽ được mã hóa, có thể chứa thông tin người dùng để xử lý logic mà không cần query db
-    const payload = { sub: userId, email };
-    const accessToken = await this.jwtService.signAsync(payload, {
+    const accessToken = await this.jwtService.signAsync({ sub: userId , tokenType: 'access'}, {
       expiresIn: Number(accessExpiry),
     });
-    const refreshToken = await this.jwtService.signAsync(payload, {
+    const refreshToken = await this.jwtService.signAsync({ sub: userId, tokenType: 'refresh' }, {
       expiresIn: Number(refreshExpiry),
     });
     const accessTokenInstance = TokenFactory.createToken(accessToken, Number(accessExpiry));
     const refreshTokenInstance = TokenFactory.createToken(refreshToken, Number(refreshExpiry));
 
     return { accessToken: accessTokenInstance, refreshToken: refreshTokenInstance };
+  }
+
+  async extractPayloadToken(token: string): Promise<any> {
+    if (!token) return null;
+    try {
+      return await this.jwtService.verifyAsync(token);
+    } catch (err) {
+      console.warn('Invalid token:', err.message);
+      return null;
+    }
   }
 
   async extractUserFromToken(token: string): Promise<string | null> {

@@ -48,28 +48,43 @@ export class AuthService {
       throw new AppException('Mật khẩu không chính xác');
     }
 
-    const token = await this.tokenService.generateTokens(authUser.id, authUser.email);
+    const token = await this.tokenService.generateTokens(authUser.id);
     const hashRefreshToken = await bcrypt.hash(token.refreshToken.id, 10);
     await this.authRepository.updateRefreshTokenById(authUser.id, hashRefreshToken);
 
     return {...token, authUser };
   }
 
-  async refreshToken(dto: RefreshDto): Promise<{ accessToken: Token; refreshToken: Token }> {
-    const authUser = await this.authRepository.findById(dto.userId);
+  async checkExistRefreshToken(userId: string, refreshToken: string): Promise<boolean> {
+    const authUser = await this.authRepository.findById(userId);
     if (!authUser || !authUser.refreshToken) {
       throw new ForbiddenException("Không có quyền truy cập");
     }
 
-    const match = await bcrypt.compare(dto.refreshToken, authUser.refreshToken);
+    const match = await bcrypt.compare(refreshToken, authUser.refreshToken);
     if (!match) {
       throw new ForbiddenException("Không có quyền truy cập");
     }
 
-    const token = await this.tokenService.generateTokens(authUser.id, authUser.email);
+    return true;
+  }
+
+  async refreshToken(dto: RefreshDto): Promise<{ accessToken: Token; refreshToken: Token }> {
+    const payload = await this.tokenService.extractPayloadToken(dto.refreshToken);
+    console.log(payload)
+    if (!payload || payload.tokenType !== 'refresh') {
+      throw new AppException('Refresh token không hợp lệ');
+    }
+
+    const existRefreshToken = await this.checkExistRefreshToken(dto.userId, dto.refreshToken);
+    if (!existRefreshToken) {
+      throw new AppException('Refresh token không hợp lệ');
+    }
+
+    const token = await this.tokenService.generateTokens(payload.sub);
     const hashRefreshToken = await bcrypt.hash(token.refreshToken.id, 10);
 
-    await this.authRepository.updateRefreshTokenById(authUser.id, hashRefreshToken);
+    await this.authRepository.updateRefreshTokenById(payload.sub, hashRefreshToken);
 
     return token;
   }

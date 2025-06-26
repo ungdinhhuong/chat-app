@@ -12,6 +12,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
+  handleRequest(err, user, info) {
+    if (err || !user) throw new UnauthorizedException();
+
+    if (user.tokenType !== 'access') {
+      throw new UnauthorizedException('Invalid token type');
+    }
+
+    return user;
+  }
+
   async canActivate(context: ExecutionContext) {
     //  getAllAndOverride: Ưu tiên metadata từ method, nếu không có thì lấy từ class
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -20,6 +30,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     ]);
     if (isPublic) return true;
 
+    // Custom logic để kiểm tra token có được cung cấp hay không
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
