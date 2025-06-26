@@ -74,4 +74,8 @@ export class RedisService implements OnModuleDestroy {
   onModuleDestroy() {
     this.disconnect().then(r => console.log('Redis disconnected'));
   }
+
+  get client(): Redis {
+    return this.publisher;
+  }
 }

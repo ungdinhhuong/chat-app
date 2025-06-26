@@ -4,6 +4,8 @@ import { UserModel } from 'src/infrastructure/database/schemas/user.model';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UserStatus } from 'src/domain/user/value_objects/user-status';
+import { User } from 'src/domain/user/entities/user';
+import { UserFactory } from 'src/infrastructure/factories/user.factory';
 
 @Injectable()
 export class UserRepositoryImpl implements UserRepository {
@@ -14,6 +16,12 @@ export class UserRepositoryImpl implements UserRepository {
   }
 
   async updateStatus(userId: string, status: UserStatus): Promise<void> {
-    await this.userModel.updateOne({_id: userId}, {$set: {status}})
+    await this.userModel.updateOne({ _id: userId }, { $set: { status } });
+  }
+
+  async getByIds(userIds: string[]): Promise<User[]> {
+    const query = this.userModel.find({ _id: { $in: userIds } });
+    const documents = await query.lean().exec();
+    return documents.map(item => UserFactory.fromDocument(item) as User);
   }
 }

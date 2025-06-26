@@ -20,6 +20,8 @@ import { socketGatewayOptions } from 'src/infrastructure/config/socket.config';
 import { Message } from 'src/domain/chat/entities/message';
 import { plainToInstance } from 'class-transformer';
 import { CreateMessageDto } from 'src/interface/rest/chat/dto/create-message.dto';
+import { OnlineService } from 'src/application/chat/services/online.service';
+import { SOCKET_EVENT } from 'src/shared/constants/socket-events';
 
 @WebSocketGateway(socketGatewayOptions)
 @Injectable()
@@ -27,22 +29,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   @WebSocketServer()
   server: Server;
 
-  private connectedUsers = new Map<string, string>(); // socketId -> userId
-
   constructor(
     private readonly chatService: MessageService,
     private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
+    private readonly onlineService: OnlineService,
   ) {
   }
 
   async afterInit() {
     await Promise.all([
-      this.redisService.subscribe('chat_messages', (message) => {
+      this.redisService.subscribe(SOCKET_EVENT.CHAT_MESSAGES, (message) => {
         const parsed = JSON.parse(message);
         const data = plainToInstance(Message, parsed);
-        this.server.to(data.room.id).emit('newMessage', data);
+        this.server.to(data.room.id).emit(SOCKET_EVENT.NEW_MESSAGE, data);
       }),
     ]);
   }
@@ -50,63 +51,67 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   async handleConnection(client: Socket) {
     const userId = await this.extractUserFromToken(client.handshake.auth.token);
     if (userId) {
-      this.connectedUsers.set(client.id, userId);
+      await this.onlineService.addUser(userId, client.id);
       await this.userService.updateStatus(userId, UserStatus.ONLINE);
+      this.server.emit(SOCKET_EVENT.ONLINE_USERS, this.onlineService.getAll());
     }
   }
 
   async handleDisconnect(client: Socket) {
-    const userId = this.connectedUsers.get(client.id);
-    if (userId) {
-      this.connectedUsers.delete(client.id);
-      await this.userService.updateStatus(userId, UserStatus.OFFLINE);
-    }
+    const userId = this.onlineService.getUserIdBySocket(client.id);
+    if (!userId) return;
+
+    await this.onlineService.removeBySocket(client.id);
+    await this.userService.updateStatus(userId, UserStatus.OFFLINE);
+    this.server.emit(SOCKET_EVENT.ONLINE_USERS, this.onlineService.getAll());
   }
 
-  @SubscribeMessage('joinRoom')
+  @SubscribeMessage(SOCKET_EVENT.JOIN_ROOM)
   async handleJoinRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { roomId: string },
   ) {
     await client.join(data.roomId);
-    client.emit('joinedRoom', { roomId: data.roomId });
+    client.emit(SOCKET_EVENT.JOINED_ROOM, { roomId: data.roomId });
   }
 
-  @SubscribeMessage('leaveRoom')
+  @SubscribeMessage(SOCKET_EVENT.LEAVE_ROOM)
   async handleLeaveRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { roomId: string },
   ) {
     await client.leave(data.roomId);
-    client.emit('leftRoom', { roomId: data.roomId });
+    client.emit(SOCKET_EVENT.LEFT_ROOM, { roomId: data.roomId });
   }
 
-  @SubscribeMessage('sendMessage')
-  async handleMessage(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { content: string; roomId: string , tempId?: string }
-  ) {
-    const userId = this.connectedUsers.get(client.id);
+  @SubscribeMessage(SOCKET_EVENT.SEND_MESSAGE)
+  async handleMessage(@ConnectedSocket() client: Socket, @MessageBody() data: {
+    content: string;
+    roomId: string,
+    tempId?: string
+  }) {
+    const userId = this.onlineService.getUserIdBySocket(client.id);
     if (!userId) return;
+
     const dto: CreateMessageDto = {
       content: data.content,
       roomId: data.roomId,
       type: MessageType.TEXT,
     };
     const messageCreated = await this.chatService.createMessage(dto, userId);
-    client.emit('sendMessageResponse', { success: true, messageCreated, tempId: data.tempId });
-    await this.redisService.publish('chat_messages', JSON.stringify(messageCreated));
+    client.emit(SOCKET_EVENT.SEND_MESSAGE_RESPONSE, { success: true, messageCreated, tempId: data.tempId });
+    await this.redisService.publish(SOCKET_EVENT.CHAT_MESSAGES, JSON.stringify(messageCreated));
   }
 
-  @SubscribeMessage('typing')
+  @SubscribeMessage(SOCKET_EVENT.USER_TYPING)
   handleTyping(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { roomId: string; isTyping: boolean },
   ) {
-    const userId = this.connectedUsers.get(client.id);
+    const userId = this.onlineService.getUserIdBySocket(client.id);
     if (!userId) return;
 
-    client.to(data.roomId).emit('userTyping', {
+    client.to(data.roomId).emit(SOCKET_EVENT.USER_TYPING, {
       userId,
       isTyping: data.isTyping,
     });

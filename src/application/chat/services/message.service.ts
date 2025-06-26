@@ -31,7 +31,6 @@ export class MessageService {
     message.created = new Date();
     message.updated = new Date();
     message.id = await this.messageRepository.create(message);
-
     return message
   }
 

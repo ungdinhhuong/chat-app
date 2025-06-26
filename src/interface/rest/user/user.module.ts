@@ -4,6 +4,8 @@ import { UserModel, UserSchema } from 'src/infrastructure/database/schemas/user.
 import { UserService } from 'src/application/user/user.service';
 import { REPOSITORY } from 'src/shared/constants/type';
 import { UserRepositoryImpl } from 'src/infrastructure/database/repositories/user.repository.impl';
+import { UserController } from 'src/interface/rest/user/controllers/user.controller';
+import { OnlineService } from 'src/application/chat/services/online.service';
 
 @Global()
 @Module({
@@ -14,11 +16,13 @@ import { UserRepositoryImpl } from 'src/infrastructure/database/repositories/use
   ],
   providers: [
     UserService,
+    OnlineService,
     {
       provide: REPOSITORY.UserRepository,
       useClass: UserRepositoryImpl,
     },
   ],
+  controllers: [UserController],
   exports: [MongooseModule, UserService],
 })
 export class UserModule {
