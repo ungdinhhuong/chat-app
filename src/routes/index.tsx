@@ -5,6 +5,7 @@ import RegisterPage from '@/features/auth/pages/RegisterPage'
 import ChatRoom from '@/features/chat/pages/ChatRoom'
 import {ROUTE} from "@/consts/ROUTE.js";
 import React from "react";
+import ChatRoomDetail from "@/features/chat/pages/ChatRoomDetail";
 
 type ProtectedRouteProps = {
   children: React.ReactNode
@@ -20,6 +21,14 @@ const AppRoutes = () => {
       <Route path="/login" element={<LoginPage/>}/>
       <Route path="/register" element={<RegisterPage/>}/>
       <Route path="/" element={<ProtectedRoute><ChatRoom/></ProtectedRoute>}/>
+      <Route
+        path="/chat/:roomId"
+        element={
+          <ProtectedRoute>
+            <ChatRoomDetail />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   )
 }

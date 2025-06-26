@@ -5,13 +5,13 @@ interface ChatState {
   messages: {
     [roomId: string]: MessageRedux[];
   };
-  selectedRoomId: string | null,
+  selectedRoomId: string,
   typingUsers: [],
 }
 
 const initialState: ChatState = {
   messages: {},
-  selectedRoomId: null as string | null,
+  selectedRoomId: '',
   typingUsers: [],
 }
 

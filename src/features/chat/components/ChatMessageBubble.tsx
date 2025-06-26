@@ -31,7 +31,7 @@ export const ChatMessageBubble = ({msg}: ChatMessageBubbleProps) => {
           <Text>{message}</Text>
         </Box>
         <HStack gap={1} fontSize="xs" color="gray.400">
-          <Text>{time}</Text>
+          {/*<Text>{time}</Text>*/}
           {isOwnMessage && seen && (<HStack gap="1px">
             <FaCheck size={12} color="blue.300"/>
           </HStack>)}

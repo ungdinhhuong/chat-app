@@ -6,38 +6,32 @@ import {addTempMessage, sendMessage} from "@/features/chat/chatSlice";
 import {selectUser} from "@/features/auth/authSelectors";
 import {User} from "@/features/auth/types/auth.type";
 import {MessageType} from "@/consts/message-type";
-import {useMemo} from "react";
+import {RoomPayload} from "@/features/chat/types/room.type";
 
-export function useChat(roomId: string | null) {
+export function useChat(roomId: string) {
   const user = useSelector(selectUser) as User;
 
-  const messageSelector = useMemo(() => {
-    return roomId ? selectMessagesByRoom(roomId) : () => [];
-  }, [roomId]);
-
-  const rawMessages = useSelector(messageSelector);
-
-  // const rawMessages = useSelector(
-  //   roomId ? selectMessagesByRoom(roomId) : () => []
-  // );
+  const rawMessages = useSelector(
+    roomId ? selectMessagesByRoom(roomId) : () => []
+  );
 
   const messages = rawMessages.map(m => ({
-      ...m,
-      created: m.created,
-      updated: m.updated,
-    }));
+    ...m,
+    created: m.created,
+    updated: m.updated,
+  }));
 
   const dispatch = useDispatch();
 
   const send = (content: string) => {
-    if (!roomId) {
-      return;
-    }
+    if (!roomId) return;
+
     const tempId = uuidv4();
     const tempMessage: MessageRedux = {
       id: tempId,
       content,
       sender: user,
+      room: { id: roomId, name: '' } as RoomPayload,
       type: MessageType.TEXT,
       isEdited: false,
       created: new Date().toISOString(),
@@ -45,9 +39,9 @@ export function useChat(roomId: string | null) {
       status: MessageStatus.SENDING
     };
 
-    dispatch(addTempMessage({roomId, message: tempMessage}));
-    dispatch(sendMessage({tempId, roomId, content}));
+    dispatch(addTempMessage({ roomId, message: tempMessage }));
+    dispatch(sendMessage({ tempId, roomId, content }));
   };
 
-  return {messages, send};
+  return { messages, send };
 }

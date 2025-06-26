@@ -2,17 +2,21 @@ import {receiveMessage, sendMessage as sendMessageAction, updateMessage} from '@
 import socket from '@/services/socket'
 import {RootState} from "@/store";
 import {EnhancedStore, Middleware} from "@reduxjs/toolkit";
-import {MessageStatus, SendMessagePayload} from "@/features/chat/types/message.type";
+import {MessagePayload, MessageStatus, SendMessagePayload} from "@/features/chat/types/message.type";
+import {SOCKET_EVENT} from "@/consts/socket-events";
 
 export const socketMiddleware: Middleware<{}, RootState> = store => next => (action: any) => {
   if (action.type === sendMessageAction.type) {
     const {tempId, roomId, content} = action.payload as SendMessagePayload;
-    socket.emit('sendMessage', {content, roomId, tempId});
+    socket.emit(SOCKET_EVENT.SEND_MESSAGE, {content, roomId, tempId});
   }
   return next(action);
 };
-
+let initialized = false;
 export const initSocketListeners = (store: EnhancedStore<RootState>) => {
+  if (initialized) return;
+  initialized = true;
+
   socket.on('connect', () => {
     console.log('[Socket] Connected to server:', socket.id);
   });
@@ -21,8 +25,23 @@ export const initSocketListeners = (store: EnhancedStore<RootState>) => {
     console.error('[Socket] Connection error:', err.message);
   });
 
-  socket.on('newMessage', (msg) => {
-    store.dispatch(receiveMessage(msg))
+  socket.on(SOCKET_EVENT.NEW_MESSAGE, (msg: MessagePayload) => {
+    const state = store.getState();
+    const currentUserId = state.auth.user?.id;
+
+    // Nếu là tin của chính mình → bỏ qua
+    if (msg.sender && msg.sender.id === currentUserId) return;
+
+    console.log('[Socket] New message received:', msg);
+    store.dispatch(receiveMessage({
+      roomId: msg.room.id,
+      message: {
+        ...msg,
+        created: new Date(msg.created).toISOString(),
+        updated: new Date(msg.updated).toISOString(),
+        status: MessageStatus.RECEIVED
+      }
+    }))
   })
 
   // socket.on('online:list', (users) => {
@@ -37,7 +56,7 @@ export const initSocketListeners = (store: EnhancedStore<RootState>) => {
   //   store.dispatch(removeOnlineUser(userId))
   // })
 
-  socket.on('sendMessageResponse', (res) => {
+  socket.on(SOCKET_EVENT.SEND_MESSAGE_RESPONSE, (res) => {
     if (res.success && res.messageCreated && res.tempId) {
       store.dispatch(updateMessage({
           roomId: res.messageCreated.room.id,

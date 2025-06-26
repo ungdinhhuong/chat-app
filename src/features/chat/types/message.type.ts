@@ -1,5 +1,6 @@
 import {User} from "@/features/auth/types/auth.type";
 import {MessageType} from "@/consts/message-type";
+import {RoomPayload} from "@/features/chat/types/room.type";
 
 export type ChatMessageBubbleProps = {
   msg: MessageRedux;
@@ -9,6 +10,7 @@ export interface MessagePayload {
   id: string;
   content: string,
   sender: User | null,
+  room: RoomPayload,
   type: MessageType,
   isEdited: boolean,
   created: Date,

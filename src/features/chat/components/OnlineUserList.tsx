@@ -1,22 +1,20 @@
 import {Box, HStack, Text} from "@chakra-ui/react";
 import React from "react";
-import {FaLaptop, FaUserNurse, FaUserTie} from "react-icons/fa";
+import {useOnlineUsers} from "@/features/chat/hooks/useOnlineUsers";
+import {FaUserTie} from "react-icons/fa";
 
 export const OnlineUserList = () => {
-  const users = [
-    {name: "admin", icon: FaUserTie},
-    {name: "alice", icon: FaLaptop},
-    {name: "bob", icon: FaUserNurse},
-  ];
+  const onlineUsers = useOnlineUsers();
+
   return (
     <Box borderTopWidth="1px" fontSize={'sm'} borderColor={"gray.200"} p={4} mt={4}>
       <Text mb={2}>
-        Đang online ({users.length})
+        Đang online ({onlineUsers.length})
       </Text>
-      {users.map((user) => {
-        const Icon = user.icon;
+      {onlineUsers.map((user) => {
+        const Icon = FaUserTie;
         return (
-          <HStack key={user.name} gap={2} mb={2} position="relative">
+          <HStack key={user.username} gap={2} mb={2} position="relative">
             <Box position="relative">
               <Icon fontSize="20px"/>
               <Box
@@ -30,7 +28,7 @@ export const OnlineUserList = () => {
                 border="2px solid white"
               />
             </Box>
-            <Text>{user.name}</Text>
+            <Text>{user.username}</Text>
           </HStack>
         );
       })}
