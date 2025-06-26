@@ -4,6 +4,9 @@ import {RoomPayload} from "@/features/chat/types/room.type";
 
 export type ChatMessageBubbleProps = {
   msg: MessageRedux;
+  isFirstInGroup: boolean;
+  isLastInGroup: boolean;
+  created: string;
 };
 
 export interface MessagePayload {

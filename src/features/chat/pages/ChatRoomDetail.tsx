@@ -3,15 +3,18 @@ import {Badge, Box, Button, Flex, Input, Stack, Text, VStack,} from "@chakra-ui/
 import {ChatMessageBubble} from "@/features/chat/components/ChatMessageBubble.jsx";
 import {useChat} from "@/features/chat/hooks/useChat";
 import {Sidebar} from "@/features/chat/components/Sidebar";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useNavigate, useParams} from "react-router-dom";
 import {ROUTE} from "@/consts/ROUTE";
 import {setMessages, setSelectedRoomId} from "@/features/chat/chatSlice";
 import {messageService} from "@/features/chat/services/message.service";
 import {MessageRedux, MessageStatus} from "@/features/chat/types/message.type";
+import {groupMessagesByDay} from "@/utils/groupMessages";
+import {selectUser} from "@/features/auth/authSelectors";
 
 const ChatRoomDetail = () => {
   const {roomId} = useParams<{ roomId: string }>();
+  const user = useSelector(selectUser);
 
   if (!roomId) {
     const navigate = useNavigate();
@@ -39,7 +42,8 @@ const ChatRoomDetail = () => {
   const [inputValue, setInputValue] = useState('');
   const {messages, send} = useChat(roomId);
 
-  const handleSend = () => {
+  const handleSend = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const content = inputValue.trim();
     if (!content || !roomId) return;
 
@@ -73,16 +77,27 @@ const ChatRoomDetail = () => {
           </Flex>
 
           <VStack flex={1} align="start" gap={3} overflowY="auto" bg="gray.100" p={4}>
-            {messages.map((msg) => (
-              <ChatMessageBubble
-                key={msg.id}
-                msg={msg}
-              />
+            {groupMessagesByDay(messages).map((dayGroup, dayIdx) => (
+              <Box key={dayIdx} w="full">
+                <Text fontSize="xs" color="gray.500" ml={2} textAlign="center" my={2}>{dayGroup.dateLabel}</Text>
+
+                {dayGroup.groups.map((group, groupIdx) => (
+                  <Box key={groupIdx} mb={4}>
+                    <VStack align="start" gap={1}>
+                      {group.messages.map((msg, index) => (
+                        <ChatMessageBubble key={msg.id} msg={msg} created={group.created}
+                                           isLastInGroup={index === group.messages.length - 1}
+                                           isFirstInGroup={index === 0}/>
+                      ))}
+                    </VStack>
+                  </Box>
+                ))}
+              </Box>
             ))}
             <div ref={messagesEndRef}/>
           </VStack>
 
-          <Box as="form" onSubmit={handleSend}>
+          <form onSubmit={handleSend}>
             <Stack gap={4} p={4} borderTopWidth="1px" borderColor={"gray.200"}
                    direction={{base: 'column', md: 'row'}} w={'full'}>
               <Input
@@ -111,7 +126,7 @@ const ChatRoomDetail = () => {
                 Gửi
               </Button>
             </Stack>
-          </Box>
+          </form>
         </>
       </Flex>
     </Flex>
